@@ -1,39 +1,46 @@
 ATMA project
 =================
-ATMA (Automated Tracer for Myelinated Axons) is a programm for detailed reconstruction of the geometry of fibers inside a peripheral nerve based on its high resolution serial section images and for the detection of the nodes of Ranvier within this nerve.
+ATMA (Automated Tracer for Myelinated Axons) is a user-friendly tool for interactive reconstruction of the geometry of fibers inside a peripheral nerve on its high resolution serial section images. Another feature of ATMA is the automatic detection of the nodes of Ranvier within this nerve.
+Most analysis operations are performed on a data sub-volume, followed by complete volume analysis in batch mode. Using it requires no experience in machine learning or image processing.
+
+Key Words:
+Integer Linear Programing, Hungarian Algorithm, Random Forest, Union Finder, Image Analysis
+
 
 Install
 -------
-You can check out the latest sources with the command::
-
-    git clone git@github.com:RWalecki/ATMA.git
-
-
-
-USAGE (GUI)
------------
-Run the GUI version of ATMA:
+Check out the latest version with the command:
 ```bash
+    git clone git@github.com:RWalecki/ATMA.git
+```
+
+
+
+Quick Start (GUI)
+-----------
+Run the ATMA GUI:
+```bash
+"cd ATMA"
 "./run.sh"
 ```
 
-1. Select Volume
+1. Select Volume by clicking on 'Load Raw/Prediction Data'.
+2. Set range of sub volume (should not be larger than 1000*1000*1000 voxel).
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/01_Prediction.png?raw=true)
 
-2. Apply Axon Classification
+3. Enter initial parameter and run Axon Classification.
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/02_AxonClassification.png?raw=true)
 
-3. Train Node Classifier
+4. Train Node Classifier. The "Zoom-in/out" button triggers the node-view.
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03_NodeDetection.png?raw=true)
-This image shows a node of Ranvier (left) and a gap that is caused by unter segmentation (right). You can trigger this view by using the "Zoom-in/out" button.
+This image below shows a node of Ranvier (left) and a gap that occurs due to under-segmentation (right). 
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04_Nodes.png?raw=true)
-4. The entire dataset can be processed wirh the previously obtained parameters for classification (step 2) and the trained classifier for node of Ranvier detection (step 3).
+5. Apply Batch Processing. The complete volume will be processed using the previously obtained parameters for classification (step 3) and the recently trained classifier for node of Ranvier detection (step 4).
 
-USAGE (CLT)
+Quick Start (CLT)
 -----------
-ATMA also contains several methods for axon segmentation and axon classification. These methods can be executed directly in python.
-(Note: do not forget to add ATMA to your PYTHONPATH)
-Here a short example:
+ATMA contains additional methods for axon segmentation and axon classification that are not implemented in the GUI version. These methods can be executed directly from the source code.
+(Note: do not forget to add the folder that contains ATMA to your PYTHONPATH)
 
 ```python
 import ATMA
@@ -48,26 +55,22 @@ a.sigmaSmooth = 0.7
 a.thresMembra = 0.7
 a.sizeFilter = [20,1000]
 a.run()
-seg = a.seg
+Axon_bin = a.seg
 
 
 #Gap Closing
-#...
-#...
-
-#Node Detection
-#...
-#...
+b=GapClosing.Tokenizer.Data2Token( Axon_bin )
+b.minSize = 3000
+b.run()
+Axon_id = b.data
 ```
-
 
 
 Testing
 -------
-After installation, you can launch the test suite from outside the
-source directory (you will need to have nosetests installed)::
-
-   $ nosetests 
+```bash
+nosetests 
+```
 
 
 REQUIREMENTS (CLT)
@@ -79,7 +82,7 @@ REQUIREMENTS (CLT)
 * h5py (tested with 2.2.0b1)
 * munkres (tested with 1.0.6)
 
-ADDITIONAL REQUIREMENTS (GUI)
------------------------------
+ADDITIONAL REQUIREMENTS FOR GUI VERSION
+---------------------------------------
 * PyQt4 (tested with 4.10.3)
 * MayaVi (tested with 4.3.0)
