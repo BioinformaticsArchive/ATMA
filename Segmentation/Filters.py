@@ -1,44 +1,43 @@
 import numpy
 import vigra
 
-class Filters():
 
-    def thresholdSegmentation(self,data,smoothingLevel,thresholdLevel):
+def thresholdSegmentation(data,smoothingLevel,thresholdLevel):
 
-        # Apply gaussian smoothing
-        if smoothingLevel==0:
-            smo = numpy.copy(data)
-        else:
-            smo = vigra.gaussianSmoothing(data,smoothingLevel)
+    # Apply gaussian smoothing
+    if smoothingLevel==0:
+        smo = numpy.copy(data)
+    else:
+        smo = vigra.gaussianSmoothing(data,smoothingLevel)
 
-        # Apply thresholding
-        res=smo>thresholdLevel
+    # Apply thresholding
+    res=smo>thresholdLevel
 
-        return res
+    return res
 
 
-    def invertVolume2D(self,data,sizeFilter=[0,1000]):
+def invertVolume2D(data,sizeFilter=[2,1000]):
 
-        res=numpy.zeros(data.shape)
+    res=numpy.zeros(data.shape)
 
-        #invert each layer
-        for z in range(res.shape[2]):
-            layer  = vigra.Image( data[:,:,z] )
-            layer  = vigra.analysis.labelImageWithBackground(1-layer)
-            feat   = vigra.analysis.extractRegionFeatures(\
-                    vigra.Image(layer)\
-                    ,numpy.array(layer),[\
-                    'Count',\
-                    'Mean'\
-                    ])
+    #invert each layer
+    for z in range(res.shape[2]):
+        layer  = vigra.Image( data[:,:,z] )
+        layer  = vigra.analysis.labelImageWithBackground(1-layer)
+        feat   = vigra.analysis.extractRegionFeatures(\
+                vigra.Image(layer)\
+                ,numpy.array(layer),[\
+                'Count',\
+                'Mean'\
+                ])
 
-            #Remove BG
-            Valid1=feat["Mean"][numpy.argwhere(feat["Count"]>sizeFilter[0]).T[0]]
-            Valid2=feat["Mean"][numpy.argwhere(feat["Count"]<sizeFilter[1]).T[0]]
-            Valid=numpy.intersect1d(Valid1,Valid2)
-            tmp=numpy.zeros(layer.shape)
-            for c in Valid:
-                tmp_c=(layer==c)
-                res[:,:,z][tmp_c]=1
+        #Remove BG
+        Valid1=feat["Mean"][numpy.argwhere(feat["Count"]>sizeFilter[0]).T[0]]
+        Valid2=feat["Mean"][numpy.argwhere(feat["Count"]<sizeFilter[1]).T[0]]
+        Valid=numpy.intersect1d(Valid1,Valid2)
+        tmp=numpy.zeros(layer.shape)
+        for c in Valid:
+            tmp_c=(layer==c)
+            res[:,:,z][tmp_c]=1
 
-        return res
+    return res

@@ -1,9 +1,9 @@
 import vigra
 import h5py
 import numpy
-from Filters import *
+import Filters
 
-class Nerve (Filters):
+class Nerve():
 
     sigmaSmooth = 0.7
     thresMembra = 0.7
@@ -15,8 +15,8 @@ class Nerve (Filters):
 
     def run(self):
 
-        res = self.thresholdSegmentation(self.dataIN[:,:,:,0],self.sigmaSmooth,self.thresMembra)
-        res = self.invertVolume2D(res,self.sizeFilter)
+        res = Filters.thresholdSegmentation(self.dataIN[:,:,:,0],self.sigmaSmooth,self.thresMembra)
+        res = Filters.invertVolume2D(res,self.sizeFilter)
 
         self.seg=res
 
