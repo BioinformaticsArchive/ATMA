@@ -36,8 +36,8 @@ if __name__ == '__main__':
             S.append(i[3])
 
         n+=1
-        if len(X)>2000:continue
-        if len(X)<300:continue
+        if len(X)>1200:continue
+        if len(X)<100:continue
         print n,len(Axon)
         col=int(A%numpy.uint(len(ColorTable)))
         r,g,b=ColorTable[col]

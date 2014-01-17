@@ -3,9 +3,11 @@ import ATMA
 
 
 class ATMA_GUI(QtGui.QWidget):
+
     def __init__(self):
         super(ATMA_GUI,self).__init__()
         self.initUI()
+
 
     def initUI(self):
 
@@ -13,9 +15,10 @@ class ATMA_GUI(QtGui.QWidget):
         self.grid.setSpacing(18)
 
         #Buttons
-        self._button(0, 0, 1, 1, self.openFile, "Open File" )
-        self._button(1, 0, 1, 1, self.clear,    "Clear"     )
-        self._button(2, 0, 1, 1, self.demo,     "Demo"      )
+        self._button(0, 0, 1, 1, self._openFile,    "Open File"         )
+        self._button(1, 0, 1, 1, self._clear,       "Clear"             )
+        self._button(2, 0, 1, 1, self._demo,        "Demo"              )
+        self._button(3, 0, 1, 1, self._viewResults, "View Results"      )
 
 
         #Maya Widget
@@ -30,6 +33,8 @@ class ATMA_GUI(QtGui.QWidget):
 
 
     #Widgets
+
+
     def _button(self,x,y,w,t,func,title):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
@@ -37,19 +42,30 @@ class ATMA_GUI(QtGui.QWidget):
 
 
     #Functions
-    def openFile(self):
+
+
+    def _openFile(self):
         self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
 
-    def clear(self):
+
+    def _viewResults(self):
+        self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+
+
+    def _clear(self):
         self.M.visualization.clear()
 
-    def demo(self):
+
+    def _demo(self):
         self.M.visualization.update_plot()
+
+
 
 def main():
     app = QtGui.QApplication.instance()
     ex = ATMA_GUI()
     app.exec_()
+
 
 if __name__ == '__main__':
 
