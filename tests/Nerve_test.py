@@ -1,12 +1,11 @@
 from nose.tools import *
 import ATMA
-
 import h5py
 import numpy
 import vigra
 
 
-class Test_Nerve:
+class Nerve_Test:
 
     def setup(self):
 
