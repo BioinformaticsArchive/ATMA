@@ -3,6 +3,26 @@ import numpy
 from Structures import *
 from scipy import ndimage
 class Tokenizer():
+    """
+    This class is used to split a volume into its components (tokens) within bounding boxes.
+
+    example:
+
+        001001        1  01
+        001011  --->  1  11
+        001011        1  11
+
+    Usage:
+
+        d1 : volume containing binary data
+
+        t=ATMA.GapClosing.Tokenizer(d1)
+        t.minSize=0
+        t.epHalo=1
+        t.run()
+        L, E = t.TList, t.EList
+
+    """
 
     minSize = 0
     epHalo = 7
@@ -15,8 +35,6 @@ class Tokenizer():
 
     def _calc_TList(self):
         self.TList = []
-
-        self.Token_List=[]
 
         cc     = vigra.analysis.labelVolumeWithBackground(vigra.Volume(self.data))
         feat   = vigra.analysis.extractRegionFeatures(vigra.Volume(cc),cc,[\
@@ -86,6 +104,7 @@ class Tokenizer():
             o1=[]
             for k in range(len(s1)-1):
                 o=s1[k+1]-s1[k]
+                #print numpy.linalg.norm(o)
                 o/=numpy.linalg.norm(o)
                 o1.append(o)
             o1=numpy.mean(o1,axis=0)
