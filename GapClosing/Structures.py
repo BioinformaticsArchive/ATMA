@@ -1,6 +1,8 @@
 class Token:
     ID          = None
     SIZE        = None
+    MIN         = None
+    MAX         = None
     SHAPE       = None
     EP1         = None
     EP2         = None
