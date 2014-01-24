@@ -5,7 +5,7 @@ class Token:
     SIZE        = None
     MIN         = None
     MAX         = None
-    SHAPE       = None
+    DATA        = None
     EP1         = None
     EP2         = None
 
@@ -18,11 +18,13 @@ class EndPoint:
     Partner     = None
 
 class Gap:
+    Position    = None
     Ep1         = None
     Ep2         = None
     Prob_Conn   = None
     Prob_Node   = None
     RNode       = None
+
 
 
 class UnionFinder():
@@ -35,6 +37,7 @@ class UnionFinder():
         self.group = {}   # maps group leader to set of members
         self.List  = List
 
+
     def _makeSet(self, elements):
         """Insert elements as new group"""
         assert type(elements) is list
@@ -44,9 +47,11 @@ class UnionFinder():
         for i in group:
             self.leader[i] = elements[0]
 
+
     def _find(self, element):
         """Return the group associated with an element"""
         return self.leader[element]
+
 
     def _union(self, element1, element2):
         """Merge the groups containing two different elements"""
@@ -74,6 +79,7 @@ class UnionFinder():
         for i in group2:
             self.leader[i] = leader1
 
+
     def _initial(self):
 
         self.leader = {}  # maps member to group leader
@@ -92,11 +98,13 @@ class UnionFinder():
             except KeyError:
                 self._makeSet([self.y])
 
+
     def _calcUnions(self):
 
         for self.x,self.y in self.List:
             if self._find(self.x)!=self._find(self.y):
                 self._union(self._find(self.x),self._find(self.y))
+
 
     def calcGroupIDs(self):
 

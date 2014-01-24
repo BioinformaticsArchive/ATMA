@@ -2,22 +2,24 @@ import numpy
 import DataStructures
 import AssignmentSolver
 
-class Matcher():
+class GapFinder():
     """
-    This class is used to find the metching endpoints of the axons.
-    Therefore it uses the EndPoint datastructure from the tokenizer class.
-    The User can set a method for:
-        a) cost function
-        b) assignment solver
-    The result is a double list containing all endpointpartners:
-        [[e1,e2],[e5,e8]...]
+
+    This class is used to compute the matching endpoints from a list of endpoints (EList)
+    The result is a list (GList) that contains all Gaps that could be found.
+    The Gap structure contains the two matching endpoints (Ep1 and Ep2).
+    Furthermore, there are two methods that can be adjust:
+
+        i)  cost function
+        ii) assignment solver
+
     """
 
     costMatrix = None
     method = "dist"     # cost function method
     solver = "hun"      # assignment solver method
-    maxDist = 4         # maximal allowed distance of endoint partners for assignment problem
-    maxOrie = 0.75      # maximal allowes orientation shift of endpoint partners
+    maxDist = 40        # maximal allowed distance of endpoint partners for assignment problem
+    minOrie = 0.75      # maximal orientation shift of endpoint partners
 
     def __init__(self,EList):
 
@@ -59,6 +61,7 @@ class Matcher():
         # Pair Features
         c = (x1+x2)/2                           # centre
         d = numpy.linalg.norm(x1-x2)            # distance
+        if numpy.all((x1-c)==0): print x1,x2,c,d
         k1= (x1-c) / numpy.linalg.norm(x1-c)    # vector pointing to center (1)
         k2= (x2-c) / numpy.linalg.norm(x2-c)    # vector pointing to center (2)
 
@@ -66,23 +69,33 @@ class Matcher():
         A=1-(2+numpy.dot(k1,o1)+numpy.dot(k2,o2))/4   #[0,1]
 
         if d>=self.maxDist:return -1
-        if A<self.maxOrie:return -1
+        if A<self.minOrie:return -1
 
         if method == "dist":
             return d
 
 
-    def _solveASP(self):
-
-        self.EList_Matching=[]
-        binMatrix=AssignmentSolver.hun(self.costMatrix)
-        for x,y in numpy.argwhere(binMatrix):
-            ep1=self.EList_1[x]
-            ep2=self.EList_2[y]
-            self.EList_Matching.append([ep1,ep2])
-
-
     def run(self):
+
+        self.GList=[]
+
+        # compute cost matrix from all endpoints
         self._calcCostMatrix()
-        self._solveASP()
-        return self.EList_Matching
+
+        # solve assignment problem for cost matrix
+        binMatrix=AssignmentSolver.hun(self.costMatrix)
+
+        # create new endpoints with matching partners
+        for x,y in numpy.argwhere(binMatrix):
+
+            ep1 = self.EList_1[x]
+            ep2 = self.EList_2[y]
+
+            newGap = DataStructures.Gap()
+            newGap.Ep1 = ep1
+            newGap.Ep2 = ep2
+            #newGap.Position = (ep1.Position+ep2.Position)/2
+
+            self.GList.append(newGap)
+
+        return self.GList

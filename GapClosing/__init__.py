@@ -1,2 +1,2 @@
-from Matcher import Matcher
-from Tokenizer import Split
+import Connector
+import Tokenizer

@@ -3,7 +3,7 @@ import numpy
 from DataStructures import Token,EndPoint,Gap
 from scipy import ndimage
 
-class Split():
+class Data2Token():
     """
     This class is used to split a volume into its components (tokens) within bounding boxes.
 
@@ -27,7 +27,7 @@ class Split():
 
     minSize = 0
     epHalo = 7
-    TList = [] # list that contains all tokens in thair bounding box
+    TList = [] # list that contains all tokens in their bounding box
     EList = [] # list that contains all endpoint belonging to tokens
 
     def __init__(self,data):
@@ -60,7 +60,7 @@ class Split():
             if Size<self.minSize:continue
 
             # Length filter (skip tokens that are to short in any Z-dimension)
-            if BBox[2]<self.epHalo:continue
+            if BBox[2]<self.epHalo+2:continue
 
             # Compute token features
             tokenData=(cc[Min[0]:Max[0]+1,Min[1]:Max[1]+1,Min[2]:Max[2]+1]==ID)
@@ -69,7 +69,7 @@ class Split():
             T.ID=ID
             T.MIN=Min
             T.MAX=Max
-            T.Data=tokenData
+            T.DATA=tokenData
             T.SIZE=numpy.uint32(Size)
 
             Skelet=[]
@@ -147,3 +147,22 @@ class Split():
     def run(self):
         self._calc_TList()
         self._calc_EList()
+
+
+
+class Token2Data():
+
+    def __init__(self,TList,DataShape):
+
+        self.data=numpy.zeros(DataShape)
+        self.TList=TList
+
+
+    def run(self):
+        for i in self.TList:
+            Min, Max = i.MIN, i.MAX+1
+            self.data[\
+                    Min[0]:Max[0],\
+                    Min[1]:Max[1],\
+                    Min[2]:Max[2]]\
+            +=i.ID*i.DATA
