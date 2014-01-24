@@ -11,7 +11,6 @@ class testcase:
         self.f=h5py.File("./tests/data/Volume001.h5")["volume/data"]
 
 
-
     def test_full(self):
 
         a=ATMA.Segmentation.BioData.Nerve(self.f)
@@ -25,24 +24,22 @@ class testcase:
         assert numpy.sum(seg==0)!=0
         assert numpy.sum(seg==1)!=0
 
-        #layer = seg[:,:,50]
-        #vigra.impex.writeImage(vigra.Image(layer),"/tmp/ooo.png")
-        #vigra.impex.writeImage(vigra.Image(self.f[:,:,50,0]),"/tmp/oo1.png")
-
+        # compute tokens end endpoints from the segmented data
         b=ATMA.GapClosing.Tokenizer.Data2Token(seg)
         b.run()
         EList = b.EList
+        TList = b.TList
 
-        # Check if token endpoints could be found
+        # Check if endpoints could be found
         assert len(EList)>10
 
-        c=ATMA.GapClosing.Connector.GapFinder(EList)
-        c.run()
-        GList = c.run()
 
+        # use tokens to reconstruct origin segmentation data
+        d=ATMA.GapClosing.Tokenizer.Token2Data(TList,seg.shape)
+        d.run()
+        res=d.data!=0
 
-        ATMA.GapClosing.Tokenizer.Token2Data(GList,2)
-        #for e in EList:
-            #print e.Token.ID, e.Partner.Token.ID
-
+        # Check if most of the tokens could be reconstruct
+        # (except of the small ones )
+        assert numpy.sum(res!=seg)/float(numpy.sum(res==seg))<0.01
 
