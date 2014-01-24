@@ -99,3 +99,6 @@ class GapFinder():
             self.GList.append(newGap)
 
         return self.GList
+
+
+class TokenRemaper():pass
