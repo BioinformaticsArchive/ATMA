@@ -37,6 +37,7 @@ def invertVolume2D(data,sizeFilter=[2,1000]):
         Valid=numpy.intersect1d(Valid1,Valid2)
         tmp=numpy.zeros(layer.shape)
         for c in Valid:
+            if c==0:continue
             tmp_c=(layer==c)
             res[:,:,z][tmp_c]=1
 
