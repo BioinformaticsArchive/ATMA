@@ -1,5 +1,6 @@
 from nose.tools import *
 import ATMA
+
 class testcase:
 
     def test_UnionFinder_NoData(self):
@@ -10,6 +11,7 @@ class testcase:
         a.calcGroupIDs()
 
         assert a.GroupIDs == None
+
 
     def test_UnionFinder1(self):
 
@@ -25,6 +27,7 @@ class testcase:
         assert a.GroupIDs[7] == 5
         assert a.GroupIDs[1] == 1
 
+
     def test_UnionFinder2(self):
 
         L2=[    [1,1],\
@@ -39,6 +42,7 @@ class testcase:
         assert a.GroupIDs[1],2
         assert a.GroupIDs[8],3
         assert a.GroupIDs[6],5
+
 
     def test_UnionFinder3(self):
 

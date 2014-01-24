@@ -2,7 +2,8 @@ from nose.tools import *
 import ATMA
 import numpy
 
-class testcase:
+
+class Token2Data_test:
 
     def setup(self):
         d1=numpy.zeros((20,20,40))
@@ -10,7 +11,7 @@ class testcase:
         d1[5:8,5:8,5:8]=1
         d1[15:18,15:18,15:18]=1
         d1[10:13,10:13,10:-10]=1
-        self.t=ATMA.GapClosing.Split(d1)
+        self.t=ATMA.GapClosing.Tokenizer.Data2Token(d1)
 
         d2=numpy.zeros((20,20,20),dtype=numpy.uint8)
         d2[8:13,1,3:]=1
@@ -21,7 +22,7 @@ class testcase:
         d2[8:13,10:14,:]=1
         d2[8:13,10:14,8:12]=0
         d2[8:13,16:18,7:-7]=1
-        self.t2=ATMA.GapClosing.Split(d2)
+        self.t2=ATMA.GapClosing.Tokenizer.Data2Token(d2)
         self.d2=d2
 
 
@@ -35,7 +36,7 @@ class testcase:
         t.minSize=0
         t.epHalo=1
         t.run()
-        assert len(t.TList)==4
+        assert len(t.TList)==3
         assert len(t.TList)==len(t.EList)/2
 
 
@@ -44,7 +45,7 @@ class testcase:
         t.minSize=20
         t.epHalo=2
         t.run()
-        assert len(t.TList)==3
+        assert len(t.TList)==1
         assert len(t.TList)==len(t.EList)/2
 
 
@@ -76,3 +77,68 @@ class testcase:
 
         #Print results for debugging
         #print self.d2[10,:,:].T
+
+
+
+class Data2Token_Test:
+
+    def test_empty(self):
+
+        d = numpy.zeros((20,20,40))
+        d2t = ATMA.GapClosing.Tokenizer.Data2Token(d)
+        d2t.epHalo=1
+        d2t.minSize=0
+        #d2t.run()
+        #TList = d2t.TList
+
+        #t2d = ATMA.GapClosing.Tokenizer.Token2Data(TList,d.shape)
+        #t2d.run()
+        #d_back = t2d.data
+
+        #assert d.shape == d_back.shape
+        #assert numpy.all( d == d_back )
+
+
+    def test_small(self):
+
+        d=numpy.zeros((20,20,40))
+        d[1:3,1:3,1:3]=1
+        d[5:8,5:8,5:8]=1
+        d[15:18,15:18,15:18]=1
+        d[10:13,10:13,10:-10]=1
+        d2t = ATMA.GapClosing.Tokenizer.Data2Token(d)
+        d2t.epHalo=0
+        d2t.minSize=0
+        d2t.run()
+        TList = d2t.TList
+
+        t2d = ATMA.GapClosing.Tokenizer.Token2Data(TList,d.shape)
+        t2d.run()
+        d_back = t2d.data!=0
+        assert d.shape == d_back.shape
+        assert numpy.all( d == d_back )
+
+
+    def test_basic(self):
+
+        d2=numpy.zeros((20,20,20))
+        d2[8:13,1,3:]=1
+        d2[8:13,3:5,:]=1
+        d2[8:13,3:5,10:12]=0
+        d2[8:13,10:14,:]=1
+        d2[8:13,10:14,8:12]=0
+        d2[8:13,16:18,7:-7]=1
+
+        d2t = ATMA.GapClosing.Tokenizer.Data2Token(d2)
+        d2t.epHalo=0
+        d2t.minSize=0
+        d2t.run()
+        TList = d2t.TList
+
+        t2d = ATMA.GapClosing.Tokenizer.Token2Data(TList,d2.shape)
+        t2d.run()
+        d_back = t2d.data!=0
+        assert d2.shape == d_back.shape
+        assert numpy.all( d2 == d_back )
+
+

@@ -10,7 +10,7 @@ class testcase:
     def setup(self):
 
         f=h5py.File("./tests/data/Volume001.h5")["volume/data"]
-        self.n=ATMA.Segmentation.Nerve(f)
+        self.n=ATMA.Segmentation.BioData.Nerve(f)
 
 
     def test_basic(self):
@@ -46,13 +46,34 @@ class testcase:
 
     def test_full(self):
 
-        self.n.sigmaSmooth = 1
+        self.n.sigmaSmooth = 0.7
+        self.n.thresMembra = 0.7
+        self.n.sizeFilter = [20,2000]
+        self.n.run()
+        res = self.n.seg
+
+        layer = res[:,:,50]
+        assert( numpy.max(layer) == 1 )
+        assert( numpy.min(layer) == 0 )
+
+        self.n.sigmaSmooth = 0.7
         self.n.thresMembra = -1
+        self.n.sizeFilter = [20,2000]
+        self.n.run()
+        res = self.n.seg
+
+        layer = res[:,:,50]
+        assert( numpy.max(layer) == 0 )
+        assert( numpy.min(layer) == 0 )
+
+
+        self.n.sigmaSmooth = 0.7
+        self.n.thresMembra = 2
         self.n.sizeFilter = [20,10e10]
         self.n.run()
         res = self.n.seg
 
-
         layer = res[:,:,50]
         assert( numpy.max(layer) == 1 )
         assert( numpy.min(layer) == 1 )
+

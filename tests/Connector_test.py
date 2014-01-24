@@ -28,14 +28,14 @@ class testcase:
         EList[5].Position, EList[5].Orientation, = [0,4,4], [0,0, 1]
         EList[6].Position, EList[6].Orientation, = [0,6,0], [0,0, 1]
 
-        self.t=ATMA.GapClosing.Matcher(EList)
+        self.t=ATMA.GapClosing.Connector.GapFinder(EList)
 
 
     def test_empty(self):
         EList=[]
-        t=ATMA.GapClosing.Matcher(EList)
+        t=ATMA.GapClosing.Connector.GapFinder(EList)
         t.run()
-        assert t.EList_Matching==[]
+        assert t.GList==[]
 
 
     def test_calcCostMatrix(self):
@@ -50,25 +50,14 @@ class testcase:
         #assert self.t.costMatrix.shape==(4,3)
 
 
-    def test_solveASP(self):
-
-         # run algorithm
-        self.t._calcCostMatrix()
-        self.t._solveASP()
-
-        # check if matching list has proper length and elements are different
-        assert len(self.t.EList_Matching)!=0
-        for e1,e2 in self.t.EList_Matching:
-            assert e1!=e2
-
-
     def test_basic(self):
-        self.t.run()
-        res = self.t.EList_Matching
 
-        assert res[0][0].Token.ID == 0 and res[0][1].Token.ID == 1
-        assert res[1][0].Token.ID == 2 and res[1][1].Token.ID == 3
-        assert res[2][0].Token.ID == 6 and res[2][1].Token.ID == 4
+        self.t.run()
+        GList = self.t.GList
+
+        assert GList[0].Ep1.Token.ID == 0 and GList[0].Ep2.Token.ID == 1
+        assert GList[1].Ep1.Token.ID == 2 and GList[1].Ep2.Token.ID == 3
+        assert GList[2].Ep1.Token.ID == 6 and GList[2].Ep2.Token.ID == 4
 
 
     def test_large(self):
@@ -83,13 +72,12 @@ class testcase:
 
             EList.append( newEndPoint )
 
-        t=ATMA.GapClosing.Matcher(EList)
-        #t.maxDist=0.5
+        t=ATMA.GapClosing.Connector.GapFinder(EList)
         t.run()
-        A=len(t.EList_Matching)
+        A=len(t.GList)
 
         t.maxDist=0.2
         t.run()
-        B=len(t.EList_Matching)
+        B=len(t.GList)
 
         assert A>B
