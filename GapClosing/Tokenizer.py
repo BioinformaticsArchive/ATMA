@@ -1,8 +1,9 @@
 import vigra
 import numpy
-from Structures import *
+from DataStructures import Token,EndPoint,Gap
 from scipy import ndimage
-class Tokenizer():
+
+class Split():
     """
     This class is used to split a volume into its components (tokens) within bounding boxes.
 

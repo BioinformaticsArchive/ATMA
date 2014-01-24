@@ -2,11 +2,12 @@ from nose.tools import *
 import ATMA
 import numpy
 
-class Connector_Test:
+class testcase:
+
     def setup(self):
         TList=[]
         for i in range(7):
-            newToken=ATMA.GapClosing.Structures.Token()
+            newToken=ATMA.GapClosing.DataStructures.Token()
             TList.append( newToken )
 
         for t in range(len(TList)):
@@ -14,7 +15,7 @@ class Connector_Test:
 
         EList=[]
         for i in range(7):
-            newEndPoint=ATMA.GapClosing.Structures.EndPoint()
+            newEndPoint=ATMA.GapClosing.DataStructures.EndPoint()
             newEndPoint.Thickness=i
             newEndPoint.Token=TList[i]
             EList.append( newEndPoint )
@@ -27,13 +28,15 @@ class Connector_Test:
         EList[5].Position, EList[5].Orientation, = [0,4,4], [0,0, 1]
         EList[6].Position, EList[6].Orientation, = [0,6,0], [0,0, 1]
 
-        self.t=ATMA.GapClosing.Connector(EList)
+        self.t=ATMA.GapClosing.Matcher(EList)
+
 
     def test_empty(self):
         EList=[]
-        t=ATMA.GapClosing.Connector(EList)
+        t=ATMA.GapClosing.Matcher(EList)
         t.run()
         assert t.EList_Matching==[]
+
 
     def test_calcCostMatrix(self):
         # check if costmarix does not exist
@@ -46,6 +49,7 @@ class Connector_Test:
         assert self.t.costMatrix!=None
         #assert self.t.costMatrix.shape==(4,3)
 
+
     def test_solveASP(self):
 
          # run algorithm
@@ -57,8 +61,8 @@ class Connector_Test:
         for e1,e2 in self.t.EList_Matching:
             assert e1!=e2
 
-    def test_basic(self):
 
+    def test_basic(self):
         self.t.run()
         res = self.t.EList_Matching
 
@@ -66,19 +70,20 @@ class Connector_Test:
         assert res[1][0].Token.ID == 2 and res[1][1].Token.ID == 3
         assert res[2][0].Token.ID == 6 and res[2][1].Token.ID == 4
 
+
     def test_large(self):
         EList=[]
         for i in range(100):
             x1,x2,x3 = numpy.random.rand(1,3)[0]
             o1,o2,o3 = 2*numpy.random.rand(1,3)[0]-1
 
-            newEndPoint = ATMA.GapClosing.Structures.EndPoint()
+            newEndPoint = ATMA.GapClosing.DataStructures.EndPoint()
             newEndPoint.Position = [x1,x2,x3]
             newEndPoint.Orientation = [o1,o2,o3]
 
             EList.append( newEndPoint )
 
-        t=ATMA.GapClosing.Connector(EList)
+        t=ATMA.GapClosing.Matcher(EList)
         #t.maxDist=0.5
         t.run()
         A=len(t.EList_Matching)

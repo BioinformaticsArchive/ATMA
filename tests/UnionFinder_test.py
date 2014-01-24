@@ -1,6 +1,6 @@
 from nose.tools import *
 import ATMA
-class UnionFinder_Test:
+class testcase:
 
     def test_UnionFinder_NoData(self):
 

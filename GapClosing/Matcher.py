@@ -2,7 +2,7 @@ import numpy
 import DataStructures
 import AssignmentSolver
 
-class Connector():
+class Matcher():
     """
     This class is used to find the metching endpoints of the axons.
     Therefore it uses the EndPoint datastructure from the tokenizer class.

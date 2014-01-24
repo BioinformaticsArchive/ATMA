@@ -1,5 +1,2 @@
-from Connector import *
-from Tokenizer import *
-import Structures
-import AssignmentSolver
-import DataStructures
+from Matcher import Matcher
+from Tokenizer import Split

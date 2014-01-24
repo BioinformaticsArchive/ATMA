@@ -5,7 +5,7 @@ import numpy
 import vigra
 
 
-class Nerve_Test:
+class testcase:
 
     def setup(self):
 

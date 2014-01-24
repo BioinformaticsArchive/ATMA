@@ -2,7 +2,7 @@ from nose.tools import *
 import ATMA
 import numpy
 
-class Tokenizer_Test:
+class testcase:
 
     def setup(self):
         d1=numpy.zeros((20,20,40))
@@ -10,7 +10,7 @@ class Tokenizer_Test:
         d1[5:8,5:8,5:8]=1
         d1[15:18,15:18,15:18]=1
         d1[10:13,10:13,10:-10]=1
-        self.t=ATMA.GapClosing.Tokenizer(d1)
+        self.t=ATMA.GapClosing.Split(d1)
 
         d2=numpy.zeros((20,20,20),dtype=numpy.uint8)
         d2[8:13,1,3:]=1
@@ -21,7 +21,7 @@ class Tokenizer_Test:
         d2[8:13,10:14,:]=1
         d2[8:13,10:14,8:12]=0
         d2[8:13,16:18,7:-7]=1
-        self.t2=ATMA.GapClosing.Tokenizer(d2)
+        self.t2=ATMA.GapClosing.Split(d2)
         self.d2=d2
 
 

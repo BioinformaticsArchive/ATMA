@@ -1,1 +1,1 @@
-from Nerve import *
+from Methods import Nerve
