@@ -7,7 +7,7 @@ class CLT():
     def run(self):
 
         # apply segmentation on prediction data
-        a=Segmentation.BioData.Nerve(self.h5File)
+        a=Segmentation.BioData.Nerve(self.predictionData)
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = self.sizeFilter
