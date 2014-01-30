@@ -101,4 +101,30 @@ class GapFinder():
         return self.GList
 
 
-class TokenRemaper():pass
+class TokenRemap():
+
+    def __init__( self, Gaps ):
+        self.Gaps = Gaps
+
+    def _calcTokenUnions(self):
+        Groups=[]
+        for g in self.Gaps:
+            Groups.append([g.Ep1.Token.ID, g.Ep2.Token.ID])
+
+        U=DataStructures.UnionFinder( Groups )
+        U.calcGroupIDs()
+        self.TokenMap = U.GroupIDs
+
+    def _remapTokenIDs( self ):
+        for g in self.Gaps:
+            T1=g.Ep1.Token
+            T2=g.Ep2.Token
+            T1.ID=self.TokenMap[T1.ID]
+            T2.ID=self.TokenMap[T2.ID]
+
+
+
+    def run(self):
+        self._calcTokenUnions()
+        self._remapTokenIDs()
+
