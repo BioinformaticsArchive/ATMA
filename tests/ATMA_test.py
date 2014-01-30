@@ -2,6 +2,7 @@ from nose.tools import *
 import ATMA
 import h5py
 import numpy
+from mayavi import mlab
 
 
 class testcase:
@@ -37,7 +38,12 @@ class testcase:
         # use tokens to reconstruct origin segmentation data
         d=ATMA.GapClosing.Tokenizer.Token2Data(TList,seg.shape)
         d.run()
-        res=d.data!=0
+        res=d.data
+
+        mlab.figure( bgcolor=(0,0,0), size=(1000,845) )
+        ATMA.GUI.DataVisualizer.segmentation( res )
+        ATMA.GUI.DataVisualizer.rawSlider( self.f[:,:,:,0] )
+        mlab.show()
 
         # Check if most of the tokens could be reconstruct
         # (except of the small ones )
