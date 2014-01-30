@@ -2,7 +2,6 @@ from nose.tools import *
 import ATMA
 import h5py
 import numpy
-from mayavi import mlab
 
 
 class testcase:
@@ -34,18 +33,30 @@ class testcase:
         # Check if endpoints could be found
         assert len(EList)>10
 
+        # metch endpoints and compute gaps
+        c=ATMA.GapClosing.Connector.GapFinder(EList)
+        c.run()
+        GList = c.GList
+
+        # from gaplist, compute token unions
+        d=ATMA.GapClosing.Connector.TokenRemap( GList )
+        d.run()
 
         # use tokens to reconstruct origin segmentation data
         d=ATMA.GapClosing.Tokenizer.Token2Data(TList,seg.shape)
         d.run()
         res=d.data
 
+        '''
+        from mayavi import mlab
         mlab.figure( bgcolor=(0,0,0), size=(1000,845) )
         ATMA.GUI.DataVisualizer.segmentation( res )
         ATMA.GUI.DataVisualizer.rawSlider( self.f[:,:,:,0] )
         mlab.show()
+        '''
 
-        # Check if most of the tokens could be reconstruct
-        # (except of the small ones )
-        assert numpy.sum(res!=seg)/float(numpy.sum(res==seg))<0.01
-
+        assert len(numpy.unique(res))<30 # no more than 30 axons
+        assert len(numpy.unique(res))>15 # at least 15 axons
+        assert len(TList)>30             # more than 30 tokens
+        assert len(EList)==2*len(TList)  # every token has two endings
+        assert len(GList)>12             # more than 12 discontinuities
