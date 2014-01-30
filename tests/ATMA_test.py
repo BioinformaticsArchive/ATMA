@@ -62,9 +62,9 @@ class testcase:
         assert len(GList)>12             # more than 12 discontinuities
 
 
-    def test_CLT(self):
+    def test_CLT_basic(self):
         a=ATMA.CLT()
-        a.h5File = self.f
+        a.predictionData = self.f
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -73,6 +73,46 @@ class testcase:
 
         assert len(numpy.unique(res))<30 # no more than 30 axons
         assert len(numpy.unique(res))>15 # at least 15 axons
+
+
+    def test_CLT_empty1(self):
+        a=ATMA.CLT()
+        a.predictionData= self.f
+        a.sigmaSmooth = 1
+        a.thresMembra = 2
+        a.sizeFilter = [20,1000]
+        a.run()
+        res = a.res
+
+        # result is empty volume because th is to high
+        assert numpy.all(res==0)
+
+
+    def test_CLT_empty2(self):
+        a=ATMA.CLT()
+        a.predictionData= self.f
+        a.sigmaSmooth = 0.7
+        a.thresMembra = 0.7
+        a.sizeFilter = [10e5,10e6]
+        a.run()
+        res = a.res
+
+        # result is empty volume because size filter is abnormal
+        assert numpy.all(res==0)
+
+
+    def test_CLT_empty3(self):
+        a=ATMA.CLT()
+        a.predictionData= self.f
+        a.sigmaSmooth = 0.7
+        a.thresMembra = -1
+        a.sizeFilter = [0,10e10]
+        a.run()
+        res = a.res
+
+        # result is empty volume because everything was one large component
+        # (th<0), so the volume must be invalid
+        assert numpy.all(res==0)
 
 
     def test_compareMethods(self):
@@ -112,7 +152,7 @@ class testcase:
         res1=d.data
 
         A=ATMA.CLT()
-        A.h5File = self.f
+        A.predictionData= self.f
         A.sigmaSmooth = 0.7
         A.thresMembra = 0.7
         A.sizeFilter = [20,1000]
