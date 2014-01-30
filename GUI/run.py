@@ -46,6 +46,7 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _openFile(self):
         self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        print self.fname
 
 
     def _viewResults(self):
@@ -58,6 +59,10 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _demo(self):
         self.M.visualization.update_plot()
+
+
+    def run(self):
+        a=ATMA.Segmentation.BioData.Nerve(self.fname)
 
 
 
