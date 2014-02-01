@@ -8,7 +8,7 @@ class testcase:
 
     def setup(self):
 
-        self.f=h5py.File("./tests/data/Volume001.h5")["volume/data"]
+        self.f=h5py.File("./tests/data/Volume001.h5")["volume/data"][:,:,:,0]
 
 
     def test_full(self):
