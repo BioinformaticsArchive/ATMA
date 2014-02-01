@@ -1,7 +1,5 @@
 from qt_embedding import *
 import h5py
-import numpy #can be removed
-import ATMA
 
 
 class ATMA_GUI(QtGui.QWidget):
@@ -10,36 +8,35 @@ class ATMA_GUI(QtGui.QWidget):
         super(ATMA_GUI,self).__init__()
         self.initUI()
 
-
     def initUI(self):
 
         self.grid = QtGui.QGridLayout()
         #self.grid.setSpacing(18)
 
         #Buttons
-        self._buttonLabel(0, 0, self.test, "Open File" , "Path [string]")
-        self._buttonLabel(1, 0, self.test, "Save File" , "Path [string]")
-        self._label(2, 0, self._set_sigmaSmooth, "Range" , "[x0,x1,y0,y1,z0,z1]")
-        self._button(3, 0, self._viewPrediction, "View Prediction")
+        self._buttonLabel(0, self._openFile, "Open File" , "Path [string]")
+        self._buttonLabel(1, self.test, "Save File" , "Path [string]")
+        self._label(2, self._set_sigmaSmooth, "Range" , "[x0,x1,y0,y1,z0,z1]")
+        self._button(3, self._viewPrediction, "View Prediction")
 
-        self._text(5,0, "Segmentation")
-        self._label(6, 0, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
-        self._label(7, 0, self._set_thresMembra, "Thrasholding" , "Level [float]")
-        self._label(8, 0, self._set_thresMembra, "Closing" , "Pixel [intager]")
-        self._button2(9, 0, self.test, "Preview",self.test, "Parameter Estimation")
+        self._text(5, "Segmentation")
+        self._label(6, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
+        self._label(7, self._set_thresMembra, "Thrasholding" , "Level [float]")
+        self._label(8, self._set_thresMembra, "Closing" , "Pixel [intager]")
+        self._button2(9, self.test, "Preview",self.test, "Parameter Estimation")
 
-        self._text(11,0, "Gap Closing")
+        self._text(11, "Gap Closing")
         #METHOD raider here !
-        self._label(12, 0, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
-        self._label(13, 0, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
-        self._button2(14, 0, self.test, "Preview",self.test, "Train Classifier")
+        self._label(12, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
+        self._label(13, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
+        self._button2(14, self.test, "Preview",self.test, "Train Classifier")
 
 
-        self._text(16,0, "Gap Closing")
-        self._button3(17, 0, self.test, "Preview",self.test, "Training",self.test, "Done")
-        self._button(21, 0, self._run, "Run pipeline on subset"      )
-        self._button(22, 0, self._run, "Run pipeline on full dataset"      )
-        self._button(23, 0, self._viewResults, "View Results" )
+        self._text(16, "Gap Closing")
+        self._button3(17, self.test, "Preview",self.test, "Training",self.test, "Done")
+        self._button(21, self._run, "Run pipeline on subset"      )
+        self._button(22, self._run, "Run pipeline on full dataset"      )
+        self._button(23, self._viewResults, "View Results" )
 
         #Maya Widget
         self.M = MayaviQWidget(self)
@@ -53,34 +50,34 @@ class ATMA_GUI(QtGui.QWidget):
 
 
     #Widgets
-    def _button(self,x,y,func,title):
+    def _button(self,x,func,title):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
-        self.grid.addWidget(b,x,y,1,3)
+        self.grid.addWidget(b,x,0,1,3)
 
-    def _button2(self,x,y,func,title,func2,title2):
+    def _button2(self,x,func,title,func2,title2):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
-        self.grid.addWidget(b,x,y,1,1)
+        self.grid.addWidget(b,x,0,1,1)
 
         b2 = QtGui.QPushButton(title2,self)
         b2.clicked.connect(func2)
-        self.grid.addWidget(b2,x,y+1,1,2)
+        self.grid.addWidget(b2,x,1,1,2)
 
-    def _button3(self,x,y,func,title,func2,title2,func3,title3):
+    def _button3(self,x,func,title,func2,title2,func3,title3):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
-        self.grid.addWidget(b,x,y,1,1)
+        self.grid.addWidget(b,x,0,1,1)
 
         b2 = QtGui.QPushButton(title2,self)
         b2.clicked.connect(func2)
-        self.grid.addWidget(b2,x,y+1)
+        self.grid.addWidget(b2,x,1)
 
         b3 = QtGui.QPushButton(title3,self)
         b3.clicked.connect(func3)
-        self.grid.addWidget(b3,x,y+2)
+        self.grid.addWidget(b3,x,2)
 
-    def _label(self,x,y,func, title, startValue):
+    def _label(self,x,func, title, startValue):
 
         q = QtGui.QLineEdit(self)
         q.setMaximumWidth(200)
@@ -91,8 +88,8 @@ class ATMA_GUI(QtGui.QWidget):
         l = QtGui.QLabel(self)
         l.setText(title)
 
-        self.grid.addWidget(l,x,y)
-        self.grid.addWidget(q,x,y+1,1,2)
+        self.grid.addWidget(l,x,0)
+        self.grid.addWidget(q,x,1,1,2)
 
         #if startValue has form of inatager or float, convert it
         try:
@@ -102,23 +99,23 @@ class ATMA_GUI(QtGui.QWidget):
 
         func(startValue)
 
-    def _text(self,x,y,title):
+    def _text(self,x,title):
 
         l = QtGui.QLabel(self)
         l.setText("---"+title+"---")
-        self.grid.addWidget(l,x,y,1,3)
+        self.grid.addWidget(l,x,0,1,3)
 
 
 
-    def _buttonLabel(self,x,y,func,title,startValue):
+    def _buttonLabel(self,x,func,title,startValue):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
-        self.grid.addWidget(b,x,y,1,1)
+        self.grid.addWidget(b,x,0,1,1)
         q = QtGui.QLineEdit(self)
         q.setMaximumWidth(200)
         q.textChanged[str].connect(func)
         q.setPlaceholderText(startValue)
-        self.grid.addWidget(q,x,y+1,1,2)
+        self.grid.addWidget(q,x,1,1,2)
 
 
 
@@ -158,17 +155,3 @@ class ATMA_GUI(QtGui.QWidget):
 
         self.res = A.res
         self.pre = A.predictionData[:,:,:,0]
-
-
-def main():
-
-    app = QtGui.QApplication.instance()
-    ex = ATMA_GUI()
-    app.exec_()
-
-
-if __name__ == '__main__':
-
-
-    main()
-
