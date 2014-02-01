@@ -15,7 +15,7 @@ class Nerve():
 
     def run(self):
 
-        res = Filters.thresholdSegmentation(self.dataIN[:,:,:,0],self.sigmaSmooth,self.thresMembra)
+        res = Filters.thresholdSegmentation(self.dataIN,self.sigmaSmooth,self.thresMembra)
         res = Filters.invertVolume2D(res,self.sizeFilter)
 
         self.seg=res

@@ -9,7 +9,7 @@ class testcase:
 
     def setup(self):
 
-        f=h5py.File("./tests/data/Volume001.h5")["volume/data"]
+        f=h5py.File("./tests/data/Volume001.h5")["volume/data"][:,:,:,0]
         self.n=ATMA.Segmentation.BioData.Nerve(f)
 
 
