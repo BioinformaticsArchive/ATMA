@@ -29,8 +29,11 @@ Here a short example:
 import ATMA
 import h5py
 
+
+pred = h5py.File("./test.h5")["volume/data"]
+
 #SEGMENTATION
-a=ATMA.Segmentation.BioData.Nerve(self.f)
+a=ATMA.Segmentation.BioData.Nerve( pred )
 a.sigmaSmooth = 0.7
 a.thresMembra = 0.7
 a.sizeFilter = [20,1000]
