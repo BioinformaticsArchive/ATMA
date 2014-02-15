@@ -66,9 +66,9 @@ REQUIREMENTS (CLT)
 * Python (tested with 2.7.4)
 * numpy (tested with 1.7.1)
 * vigra (tested with 1.8.0)
-* PyQt4 (tested with 4.10.3)
 * h5py (tested with 2.2.0b1)
 
 ADDITIONAL REQUIREMENTS (GUI)
 -----------------------------
+* PyQt4 (tested with 4.10.3)
 * MayaVi (tested with 4.3.0)

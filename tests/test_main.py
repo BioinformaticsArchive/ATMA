@@ -1,19 +1,17 @@
-from nose.tools import *
+import unittest
 import ATMA
 import h5py
 import numpy
 
 
+f=h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
+
 class testcase:
-
-    def setup(self):
-
-        self.f=h5py.File("./tests/data/Volume001.h5")["volume/data"][:,:,:,0]
 
 
     def test_full(self):
 
-        a=ATMA.Segmentation.BioData.Nerve(self.f)
+        a=ATMA.Segmentation.BioData.Nerve(f)
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -51,7 +49,7 @@ class testcase:
         from mayavi import mlab
         mlab.figure( bgcolor=(0,0,0), size=(1000,845) )
         ATMA.GUI.DataVisualizer.segmentation( res )
-        ATMA.GUI.DataVisualizer.rawSlider( self.f[:,:,:,0] )
+        ATMA.GUI.DataVisualizer.rawSlider( f[:,:,:,0] )
         mlab.show()
         '''
 
@@ -64,7 +62,7 @@ class testcase:
 
     def test_CLT_basic(self):
         a=ATMA.CLT()
-        a.predictionData = self.f
+        a.predictionData = f
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -77,7 +75,7 @@ class testcase:
 
     def test_CLT_empty1(self):
         a=ATMA.CLT()
-        a.predictionData= self.f
+        a.predictionData= f
         a.sigmaSmooth = 1
         a.thresMembra = 2
         a.sizeFilter = [20,1000]
@@ -90,7 +88,7 @@ class testcase:
 
     def test_CLT_empty2(self):
         a=ATMA.CLT()
-        a.predictionData= self.f
+        a.predictionData= f
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [10e5,10e6]
@@ -103,7 +101,7 @@ class testcase:
 
     def test_CLT_empty3(self):
         a=ATMA.CLT()
-        a.predictionData= self.f
+        a.predictionData= f
         a.sigmaSmooth = 0.7
         a.thresMembra = -1
         a.sizeFilter = [0,10e10]
@@ -117,7 +115,7 @@ class testcase:
 
     def test_compareMethods(self):
 
-        a=ATMA.Segmentation.BioData.Nerve(self.f)
+        a=ATMA.Segmentation.BioData.Nerve(f)
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -152,7 +150,7 @@ class testcase:
         res1=d.data
 
         A=ATMA.CLT()
-        A.predictionData= self.f
+        A.predictionData= f
         A.sigmaSmooth = 0.7
         A.thresMembra = 0.7
         A.sizeFilter = [20,1000]
@@ -162,3 +160,7 @@ class testcase:
         assert numpy.all( res1 == res2 )
 
 
+
+if __name__ == "__main__":
+    import nose
+    nose.run(defaultTest=__file__, env={'NOSE_NOCAPTURE' : 1})

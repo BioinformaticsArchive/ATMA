@@ -1,4 +1,4 @@
-from nose.tools import *
+import unittest
 import ATMA
 import numpy
 
@@ -80,4 +80,6 @@ class testcase:
         t.run()
         B=len(t.GList)
 
-        assert A>B
+if __name__ == "__main__":
+    import nose
+    nose.run(defaultTest=__file__, env={'NOSE_NOCAPTURE' : 1})

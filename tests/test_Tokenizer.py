@@ -1,4 +1,4 @@
-from nose.tools import *
+import unittest
 import ATMA
 import numpy
 
@@ -142,3 +142,6 @@ class Data2Token_Test:
         assert numpy.all( d2 == d_back )
 
 
+if __name__ == "__main__":
+    import nose
+    nose.run(defaultTest=__file__, env={'NOSE_NOCAPTURE' : 1})

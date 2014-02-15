@@ -1,13 +1,13 @@
-from nose.tools import *
-import ATMA
+import unittest
+from ATMA.GapClosing.DataStructures import UnionFinder
 
-class testcase:
+class testcase(unittest.TestCase):
 
     def test_UnionFinder_NoData(self):
 
         L0=None
 
-        a=ATMA.GapClosing.DataStructures.UnionFinder(L0)
+        a=UnionFinder(L0)
         a.calcGroupIDs()
 
         assert a.GroupIDs == None
@@ -21,7 +21,7 @@ class testcase:
                 [6,7],\
                 [7,8]  ]
 
-        a=ATMA.GapClosing.DataStructures.UnionFinder(L1)
+        a=UnionFinder(L1)
         a.calcGroupIDs()
 
         assert a.GroupIDs[7] == 5
@@ -36,7 +36,7 @@ class testcase:
                 [3,8],\
                 [5,6]  ]
 
-        a=ATMA.GapClosing.DataStructures.UnionFinder(L2)
+        a=UnionFinder(L2)
         a.calcGroupIDs()
 
         assert a.GroupIDs[1],2
@@ -48,7 +48,12 @@ class testcase:
 
         L3=[[1,1]]
 
-        a=ATMA.GapClosing.DataStructures.UnionFinder(L3)
+        a=UnionFinder(L3)
         a.calcGroupIDs()
 
         assert a.GroupIDs[1],1
+
+
+if __name__ == "__main__":
+    import nose
+    nose.run(defaultTest=__file__, env={'NOSE_NOCAPTURE' : 1})

@@ -1,4 +1,4 @@
-from nose.tools import *
+import unittest
 import ATMA
 import numpy
 from mayavi import mlab
@@ -46,3 +46,8 @@ class testcase:
         ATMA.GUI.DataVisualizer.segmentation( data )
         ATMA.GUI.DataVisualizer.rawSlider( raw )
         mlab.close(all=True)
+
+
+if __name__ == "__main__":
+    import nose
+    nose.run(defaultTest=__file__, env={'NOSE_NOCAPTURE' : 1})
