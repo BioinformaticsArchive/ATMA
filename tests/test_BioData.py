@@ -3,15 +3,15 @@ import h5py
 import numpy
 import vigra
 from ATMA.Segmentation.BioData import Nerve
+from ATMA.Segmentation.BioData import Cortex
 
-f=h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
+vagus_data = h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
+cortex_data = h5py.File("./data/cortex001.h5")["volume/data"][100:200,100:200,:40,0]
 
-class testcase(unittest.TestCase):
-
+class testNerve(unittest.TestCase):
 
     def test_basic(self):
-        #n = ATMA.Segmentation.BioData.Nerve(f)
-        n = Nerve(f)
+        n = Nerve( vagus_data )
 
         n.sigmaSmooth = 1
         n.thresMembra = 0.5
@@ -27,10 +27,9 @@ class testcase(unittest.TestCase):
         components = vigra.analysis.labelImageWithBackground(vigra.Image(layer))
         assert( len(components) > 5 )
 
-
     def test_empty(self):
-        #n = ATMA.Segmentation.BioData.Nerve(f)
-        n = Nerve(f)
+
+        n = Nerve( vagus_data )
 
         n.sigmaSmooth = 1
         n.thresMembra = 1
@@ -43,10 +42,9 @@ class testcase(unittest.TestCase):
         assert( numpy.max(layer) == 0 )
         assert( numpy.min(layer) == 0 )
 
-
     def test_full(self):
-        #n = ATMA.Segmentation.BioData.Nerve(f)
-        n = Nerve(f)
+
+        n = Nerve( vagus_data )
 
 
         n.sigmaSmooth = 0.7
@@ -80,6 +78,25 @@ class testcase(unittest.TestCase):
         assert( numpy.max(layer) == 1 )
         assert( numpy.min(layer) == 1 )
 
+class testCortex(unittest.TestCase):
+
+    def test_basic(self):
+
+        n = Cortex( cortex_data )
+
+        n.run()
+        res = n.seg
+        assert( numpy.max(res) == 1 )
+        assert( numpy.min(res) == 0 )
+
+
+    def test_empty(self):
+
+        n = Cortex(numpy.zeros((100,100,100)))
+        n.run()
+        res = n.seg
+        assert( numpy.max(res) == 0 )
+        assert( numpy.min(res) == 0 )
 
 if __name__ == "__main__":
     import nose
