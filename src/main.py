@@ -1,7 +1,7 @@
-from qt_embedding import *
+from GUI import *
+import GUI
 import Segmentation
 import GapClosing
-import GUI
 import h5py
 import re
 import numpy
@@ -166,7 +166,7 @@ class ATMA_GUI(QtGui.QWidget):
         self._clear()
         GUI.DataVisualizer.rawSlider( self.data)
     def _viewResults(self):
-        ATMA.GUI.DataVisualizer.segmentation( self.res )
+        GUI.DataVisualizer.segmentation( self.res )
 
     def test(self):pass
 
