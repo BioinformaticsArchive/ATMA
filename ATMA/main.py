@@ -14,7 +14,6 @@ class ATMA_GUI(QtGui.QWidget):
         self.initUI()
 
     def initUI(self):
-
         self.grid = QtGui.QGridLayout()
         #self.grid.setSpacing(18)
 
@@ -88,7 +87,6 @@ class ATMA_GUI(QtGui.QWidget):
         self.grid.addWidget(b3,x,2)
 
     def _label(self,x,func, title, startValue):
-
         q = QtGui.QLineEdit(self)
         q.setMaximumWidth(200)
         q.textChanged[str].connect(func)
@@ -112,7 +110,6 @@ class ATMA_GUI(QtGui.QWidget):
         return q
 
     def _text(self,x,title):
-
         l = QtGui.QLabel(self)
         l.setText("---"+title+"---")
         self.grid.addWidget(l,x,0,1,3)
@@ -124,12 +121,10 @@ class ATMA_GUI(QtGui.QWidget):
 
 
 
-
-
     #Functions
 
-
     def _none(self,text):pass
+
     def _openFile(self):
 
         self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
@@ -158,13 +153,14 @@ class ATMA_GUI(QtGui.QWidget):
             self.thresMembra=float(text)
         except ValueError:
             pass
-    def _viewPrediction(self):
 
+    def _viewPrediction(self):
         L=self.Range
         self.data=self.FullData[L[0]:L[1],L[2]:L[3],L[4]:L[5],0]
 
         self._clear()
         GUI.DataVisualizer.rawSlider( self.data)
+
     def _viewResults(self):
         GUI.DataVisualizer.segmentation( self.res )
 
@@ -177,13 +173,19 @@ class ATMA_GUI(QtGui.QWidget):
         self.M.visualization.update_plot()
 
     def _runSegmentation(self):
-
         A=Segmentation.BioData.Nerve(self.data)
         A.sigmaSmooth = self.sigmaSmooth
         A.thresMembra = self.thresMembra
         A.sizeFilter = [20,1000]
         A.run()
         self.seg=A.seg
+
+        #A=Segmentation.BioData.Cortex(self.data)
+        #A.sigmaSmooth = self.sigmaSmooth
+        #A.thresMembra = self.thresMembra
+        #A.sizeFilter = [20,1000]
+        #A.run()
+        #self.seg=A.seg
 
         self._clear()
         GUI.DataVisualizer.rawSlider( self.data)

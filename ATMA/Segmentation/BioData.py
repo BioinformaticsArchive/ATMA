@@ -4,6 +4,7 @@ import numpy
 import vigra
 import Filters
 
+
 class Nerve():
 
     sigmaSmooth = 0.7
@@ -13,13 +14,13 @@ class Nerve():
     def __init__(self,dataIN):
         self.dataIN=dataIN
 
-
     def run(self):
 
         res = Filters.thresholdSegmentation(self.dataIN,self.sigmaSmooth,self.thresMembra)
         res = Filters.invertVolume2D(res,self.sizeFilter)
 
         self.seg=res
+
 
 class Cortex():
     
@@ -30,7 +31,6 @@ class Cortex():
     th1 = 0.55
     th2 = 12
 
-    
     def __init__(self,dataIN):
         self.dataIN = vigra.Volume(dataIN)
 
