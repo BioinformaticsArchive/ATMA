@@ -18,7 +18,7 @@ USAGE
 The GUI version can be executed by running the script 
 
 ```bash
-"./ATMA/run.py"
+"./run.sh"
 ```
 
 ATMA contains several methods for segmentation, tracing and classification. These methods can be run directly in python.
@@ -33,7 +33,7 @@ import h5py
 pred = h5py.File("./test.h5")["volume/data"]
 
 #SEGMENTATION
-a=ATMA.Segmentation.BioData.Nerve( pred )
+a=ATMA.src.Segmentation.BioData.Nerve( pred )
 a.sigmaSmooth = 0.7
 a.thresMembra = 0.7
 a.sizeFilter = [20,1000]
