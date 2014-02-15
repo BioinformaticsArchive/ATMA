@@ -33,7 +33,7 @@ import h5py
 pred = h5py.File("./test.h5")["volume/data"]
 
 #SEGMENTATION
-a=ATMA.src.Segmentation.BioData.Nerve( pred )
+a=ATMA.Segmentation.BioData.Nerve( pred )
 a.sigmaSmooth = 0.7
 a.thresMembra = 0.7
 a.sizeFilter = [20,1000]
@@ -60,12 +60,15 @@ source directory (you will need to have nosetests installed)::
    $ nosetests 
 
 
-REQUIREMENTS
-------------
+REQUIREMENTS (CLT)
+------------------
 
 * Python (tested with 2.7.4)
 * numpy (tested with 1.7.1)
 * vigra (tested with 1.8.0)
 * PyQt4 (tested with 4.10.3)
-* MayaVi (tested with 4.3.0)
 * h5py (tested with 2.2.0b1)
+
+ADDITIONAL REQUIREMENTS (GUI)
+-----------------------------
+* MayaVi (tested with 4.3.0)

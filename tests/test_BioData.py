@@ -4,7 +4,7 @@ import numpy
 import vigra
 from src.Segmentation.BioData import Nerve
 
-f=h5py.File("./data/Volume001.h5")["volume/data"][:,:,:,0]
+f=h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
 
 class testcase(unittest.TestCase):
 
