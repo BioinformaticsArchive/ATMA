@@ -28,7 +28,6 @@ class testNerve(unittest.TestCase):
         assert( len(components) > 5 )
 
     def test_empty(self):
-
         n = Nerve( vagus_data )
 
         n.sigmaSmooth = 1
@@ -43,7 +42,6 @@ class testNerve(unittest.TestCase):
         assert( numpy.min(layer) == 0 )
 
     def test_full(self):
-
         n = Nerve( vagus_data )
 
 
@@ -78,10 +76,10 @@ class testNerve(unittest.TestCase):
         assert( numpy.max(layer) == 1 )
         assert( numpy.min(layer) == 1 )
 
+
 class testCortex(unittest.TestCase):
 
     def test_basic(self):
-
         n = Cortex( cortex_data )
 
         n.run()
@@ -89,9 +87,7 @@ class testCortex(unittest.TestCase):
         assert( numpy.max(res) == 1 )
         assert( numpy.min(res) == 0 )
 
-
     def test_empty(self):
-
         n = Cortex(numpy.zeros((100,100,100)))
         n.run()
         res = n.seg
