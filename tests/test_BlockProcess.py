@@ -1,5 +1,5 @@
 import unittest
-from ATMA.BlockProcess0 import BlockProcess
+from ATMA.BlockProcess import BlockProcess
 import numpy
 import h5py
 
@@ -8,16 +8,12 @@ def func(data):
 
 class testcase:
 
-    def test_1_oneBlock(self):
+    def test_1_simple(self):
     
         B = BlockProcess()
         B.path_in  = ["./data/vagus001.h5","volume/data"]
         B.path_out = ["/tmp/res.h5","volume/data"]
-        B.blockSize = [100, 100, 50]
-        B.helo = 50
         B.Process = func 
-        B.Workers=6
-        B.StoreAll=1
         B.run()
         res_Block = B.res[::]
 
@@ -35,7 +31,6 @@ class testcase:
         B.helo = 10
         B.Process = func 
         B.Workers=6
-        B.StoreAll=1
         B.run()
         res_Block = B.res[::]
 
@@ -53,7 +48,6 @@ class testcase:
         B.helo = 10
         B.Process = func 
         B.Workers=6
-        B.StoreAll=1
         B.run()
         res_Block = B.res[::]
 
@@ -62,6 +56,21 @@ class testcase:
 
         assert numpy.mean(res_Block!=0) == numpy.mean(res_Norm!=0)
         
+    def test_4_oneBlock(self):
+    
+        B = BlockProcess()
+        B.path_in  = ["./data/vagus001.h5","volume/data"]
+        B.path_out = ["/tmp/res3.h5","volume/data"]
+        B.blockSize = [150, 150, 80]
+        B.Process = func 
+        B.run()
+        res_Block = B.res[::]
+
+        data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
+        res_Norm = func(data_in)
+
+        assert numpy.mean(res_Block!=0) == numpy.mean(res_Norm!=0)
+
 
 if __name__ == "__main__":
     import nose

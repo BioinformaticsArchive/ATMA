@@ -12,21 +12,57 @@ import multiprocessing
 
 
 class BlockProcess():
+    """
+    Any hdf5 file that contains a four-dimensional dataset ( X Y Z C ) can be processed block-wise and
+    parallel using this class.
+    The result is a three-dimensional dataset ( X Y Z ) with the data type unsigned integer 32
+
+    Example How to use:
+
+        B = BlockProcess()
+
+        # define input and output
+        B.path_in  = ["./Data/test.h5","volume/data"]
+        B.path_out = ["/tmp/res.h5","volume/data"]
+
+        #define shape of sub blocks
+        B.blockSize = [100, 100, 50]
+        B.helo = 50
+
+        # func is a method that takes a four dimensional dataset as argument
+        # and returns a three dimensional dataset
+        # minimum working example:
+        def func(data):return data[:,:,:,0]>0.5
+
+        B.Process = func  
+
+        # amount of subprocesses
+        B.Workers=6
+
+        # run the method func in parallel
+        B.run()
+
+        # access to the resulting dataset (pointer on hdf5 file)
+        res_Block = B.res[::]
+
+    """
 
     helo       = 30
-    Sub_Volume = 0
-    IN         = 0
-    OUT_RAW   = 0
-    OUT_RESULT = 0
-    Workers     = 8
-    QTbar     = 0
+    blockSize  = [50,50,50]
+    Workers    = 8
     Sub_Volume = None
-    verbose = 0
+    verbose    = 0
 
     def __init__(self):pass
 
 
     def _calcWorkingArray3d(self):
+        '''
+        outgoing from the input data shape, this method is used to
+        obtain the block positions of all subblock
+        The positions are stored in the list BLOCKS
+        '''
+
         self.BLOCKS=[]
 
         [[sx0,sx1],[sy0,sy1],[sz0,sz1]]=self.Sub_Volume
@@ -68,6 +104,13 @@ class BlockProcess():
                     self.BLOCKS.append((frame,FD,WD,FR,WR))
 
     def _ProcessBlock(self,data,i,R,r,h,UnionF,l):
+        '''
+        The given method is applied on the subblock of the input data.
+        Every component in this subblock gets its unique ID
+        ID = ((i+1)*(2**16))+c
+        where i is the block number of the full dataset 
+        and c the component number of the component in the subblock.
+        '''
         res=self.Process(data)
 
         #Prozess Sub-block
@@ -92,6 +135,11 @@ class BlockProcess():
         l.release()
 
     def _calcUnions(self):
+        '''
+        The mapping function a.GroupIDs is computed by applying the unionfinder algorithm 
+        on all overlapping components
+        '''
+
         outF = h5py.File(self.path_out[0], "r+")
         self.Unions=[]
 
@@ -120,6 +168,10 @@ class BlockProcess():
         self.G = a.GroupIDs
 
     def _AssignIDS(self,l,i):
+        '''
+        All components get their group IDs by using the mapping function a.GroupIDs.
+        '''
+
         h,D,d,R,r=self.BLOCKS[i]
 
         l.acquire()
@@ -199,8 +251,8 @@ class BlockProcess():
         for i in range(len(self.BLOCKS)):
             if self.verbose==1:
                 print "Processing:",i+1,len(self.BLOCKS)
-            if self.QTbar!=0:
-                self.QTbar.setValue(70*(i+1)/len(self.BLOCKS))
+            #if self.QTbar!=0:
+                #self.QTbar.setValue(70*(i+1)/len(self.BLOCKS))
             h,D,d,R,r=self.BLOCKS[i]
             data = self.path_pre[D[0]:D[1],D[2]:D[3],D[4]:D[5],:]
             Process(target=self._ProcessBlock, args=(data,i,R,r,h,UnionF,lock)).start()
@@ -216,8 +268,8 @@ class BlockProcess():
         for i in range(len(self.BLOCKS)):
             if self.verbose==1:
                 print "Saveing:",i+1,len(self.BLOCKS)
-            if self.QTbar!=0:
-                self.QTbar.setValue(70+(30*(i+1))/len(self.BLOCKS))
+            #if self.QTbar!=0:
+                #self.QTbar.setValue(70+(30*(i+1))/len(self.BLOCKS))
 
             Process(target=self._AssignIDS,args=(lock,i)).start()
             while len(multiprocessing.active_children())>=self.Workers:
