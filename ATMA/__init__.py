@@ -1,6 +1,5 @@
 import Segmentation
 import GapClosing
-import GUI
 
 class CLT():
     def __init__(self):pass
