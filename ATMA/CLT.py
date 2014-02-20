@@ -1,17 +1,30 @@
 import Segmentation
 import GapClosing
 from BlockProcess import BlockProcess
+import h5py
 
 class CLT():
 
+
+    path_in = None
+    path_out = None
+    blockSize = None
+    Sub_Volume = None
+    helo = 10
+    Workers = 8
+   
+    #Vagus
+    sigmaSmooth = 0.7
+    thresMembra = 0.7
+    sizeFilter = [20,1000]
+
+
     def __init__(self):pass
-        
 
-
-    def run(self):
+    def _Prozess(self):
 
         # apply segmentation on prediction data
-        a=Segmentation.BioData.Nerve(self.predictionData)
+        a=Segmentation.BioData.Nerve(self.predictionData[:,:,:,0])
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = self.sizeFilter
@@ -36,4 +49,12 @@ class CLT():
         # use tokens to reconstruct origin segmentation data
         d=GapClosing.Tokenizer.Token2Data(TList,seg.shape)
         d.run()
-        self.res = d.data
+        return d.data
+    
+
+    def run(self):
+        self.predictionData = h5py.File(self.path_in[0])[self.path_in[1]]
+
+        if self.Sub_Volume == None:
+            self.res = self._Prozess()
+
