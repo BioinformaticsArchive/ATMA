@@ -5,13 +5,13 @@ import h5py
 
 class CLT():
 
-
     path_in = None
     path_out = None
     blockSize = None
     Sub_Volume = None
     helo = 10
     Workers = 8
+    verbose = 0
    
     #Vagus
     sigmaSmooth = 0.7
@@ -63,6 +63,7 @@ class CLT():
             B.path_out = self.path_out
             B.blockSize = self.blockSize
             B.Sub_Volume = self.Sub_Volume
+            B.verbose = self.verbose
             B.helo = self.helo
             B.Process = self._Process 
             B.run()
