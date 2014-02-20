@@ -18,7 +18,7 @@ class GapFinder():
     costMatrix = None
     method = "dist"     # cost function method
     solver = "hun"      # assignment solver method
-    maxDist = 40        # maximal allowed distance of endpoint partners for assignment problem
+    maxDist = 70        # maximal allowed distance of endpoint partners for assignment problem
     minOrie = 0.75      # maximal orientation shift of endpoint partners
 
     def __init__(self,EList):
