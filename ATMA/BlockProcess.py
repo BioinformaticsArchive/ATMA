@@ -278,5 +278,3 @@ class BlockProcess():
 
         while len(multiprocessing.active_children())!=0:
             time.sleep(1)
-
-        self.res=h5py.File(self.path_out[0])[self.path_out[1]]
