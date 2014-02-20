@@ -16,7 +16,7 @@ class testcase:
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
         a.run()
-        res = a.res
+        res = a.res[::]
 
         assert len(numpy.unique(res))<30 # no more than 30 axons
         assert len(numpy.unique(res))>15 # at least 15 axons
@@ -28,7 +28,7 @@ class testcase:
         a.thresMembra = 2
         a.sizeFilter = [20,1000]
         a.run()
-        res = a.res
+        res = a.res[::]
 
         # result is empty volume because th is to high
         assert numpy.all(res==0)
@@ -41,7 +41,7 @@ class testcase:
         a.thresMembra = 0.7
         a.sizeFilter = [10e5,10e6]
         a.run()
-        res = a.res
+        res = a.res[::]
 
         # result is empty volume because size filter is abnormal
         assert numpy.all(res==0)
@@ -54,13 +54,57 @@ class testcase:
         a.thresMembra = -1
         a.sizeFilter = [0,10e10]
         a.run()
-        res = a.res
+        res = a.res[::]
 
         # result is empty volume because everything was one large component
         # (th<0), so the volume must be invalid
         assert numpy.all(res==0)
 
 
+    def test_Block_basic(self):
+
+        a=CLT()
+        a.path_in = ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus001.h5","volume/data"]
+        a.Sub_Volume = [[0,100], [0,100], [0,17]]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
+        a.thresMembra = 0.7
+        a.sizeFilter = [20,1000]
+        a.run()
+        res = a.res[::]
+        assert res.shape == (100,100,17)
+
+
+    def test_compareBlockVsNormal(self):
+        
+        a=CLT()
+        a.path_in = ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus002.h5","volume/data"]
+        a.Sub_Volume = [[0,150], [0,150], [0,80]]
+        a.blockSize = [80,80,80]
+        a.helo = 20
+        a.sigmaSmooth = 0.7
+        a.thresMembra = 0.7
+        a.sizeFilter = [20,1000]
+        a.run()
+        res = a.res[::]
+        assert res.shape == (150,150,80)
+
+
+        b=CLT()
+        b.path_in = ["./data/vagus001.h5","volume/data"]
+        b.sigmaSmooth = 0.7
+        b.thresMembra = 0.7
+        b.sizeFilter = [20,1000]
+        b.run()
+        res = b.res[::]
+
+        resB = a.res[::]!=0
+        resN = b.res[::]!=0
+
+        assert numpy.all( resB == resN )
 
 if __name__ == "__main__":
 

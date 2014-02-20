@@ -21,10 +21,10 @@ class CLT():
 
     def __init__(self):pass
 
-    def _Prozess(self):
+    def _Process(self, data):
 
         # apply segmentation on prediction data
-        a=Segmentation.BioData.Nerve(self.predictionData[:,:,:,0])
+        a=Segmentation.BioData.Nerve(data[:,:,:,0])
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = self.sizeFilter
@@ -56,5 +56,17 @@ class CLT():
         self.predictionData = h5py.File(self.path_in[0])[self.path_in[1]]
 
         if self.Sub_Volume == None:
-            self.res = self._Prozess()
+            self.res = self._Process(self.predictionData)
+        else:
+            B = BlockProcess()
+            B.path_in  = self.path_in
+            B.path_out = self.path_out
+            B.blockSize = self.blockSize
+            B.Sub_Volume = self.Sub_Volume
+            B.helo = self.helo
+            B.Process = self._Process 
+            B.run()
+            self.res = h5py.File(self.path_out[0])[self.path_out[1]]
+
+
 
