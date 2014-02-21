@@ -3,18 +3,40 @@ import vigra
 from Segmentation.Filters import *
 
 class GapDetection():
+    '''
+    The node of Ranvier Classifier can be trained and used with this class.
+
+    The segmentation process of ATMA creates a file that contains all axons 
+    and all gaps with their unique ID.
+    The axons are stored in [inner hdf5path]/axons
+    the gaps are stored in [inner hdf5path]/gaps
+
+    Both datasets are used for the node of Ranvier classifier training 
+    '''
 
     gaps = None
     pred = None
 
     def __init__(self):pass
 
-    def _calcGapList(self):
+    def _calcGapList(self,gaps):
+        '''
+
+        Computing the list that contains all gaps
+        from a binary volume 
+
+                [[x1,y1,z1],
+                 [x2,y2,z2],
+                 [x3,y3,z3],
+                 ...
+                ]
+
+        '''
         
         self.gapL=[]
         self.labL=[]
-        for z in range(self.gaps.shape[2]):
-            pos=numpy.argwhere(self.gaps[:,:,z])
+        for z in range(gaps.shape[2]):
+            pos=numpy.argwhere(gaps[:,:,z])
             if len(pos)!=0:
                 for p in pos:
                     [x,y] = p
@@ -23,6 +45,9 @@ class GapDetection():
 
 
     def _calcFeatureList(self):
+        '''
+        Computing the feature vector to each gap
+        '''
 
         s = self.gaps.shape
         M = 15
@@ -67,6 +92,5 @@ class GapDetection():
 
     def run(self):
 
-        self._calcGapList()
+        self._calcGapList(self.gaps)
         self._calcFeatureList()
-        print len(self.Features),len(self.gapL)
