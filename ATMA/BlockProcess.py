@@ -189,34 +189,10 @@ class BlockProcess():
             tmp[tmp==c]=id
 
 
-        ske=[]
-        for L in range(tmp.shape[2]):
-            Layer=tmp[:,:,L]
-            for c in np.unique(Layer):
-                if c==0:continue
-                tmpL=Layer==c
-                S=np.sum(tmpL)
-                X,Y = ndimage.measurements.center_of_mass(tmpL)
-                X,Y,Z = [X,Y,L]+np.array([r[0],r[2],r[4]])
-                ske.append([Z,c,S,X,Y])
-        #ske=np.array(ske)
-        l.acquire()
-        f = open(self.path_out[0]+"_ske.txt", 'a')
-        for Z,c,S,X,Y in ske:
-                f.write(str(int(Z))+','+\
-                        str(int(c))+','+\
-                        str(S)+','+\
-                        str(X)+','+\
-                        str(Y)+','+\
-                        '\n')
-
-
         outF = h5py.File(self.path_out[0], "r+")
         out=outF["volume/data"]
         out[ r[0]:r[1], r[2]:r[3], r[4]:r[5]]=tmp
         outF.close()
-        f.close()
-        l.release()
 
     def run(self):
         self.path_pre= h5py.File(self.path_in[0])[self.path_in[1]]
@@ -230,8 +206,6 @@ class BlockProcess():
         [[sx0,sx1],[sy0,sy1],[sz0,sz1]]=self.Sub_Volume
         S0,S1,S2=sx1-sx0,sy1-sy0,sz1-sz0
 
-
-
         #create block grid
         self._calcWorkingArray3d()
 
@@ -244,8 +218,6 @@ class BlockProcess():
         outF = h5py.File(self.path_out[0], "w")
         outF.create_dataset(self.path_out[1], (S0,S1,S2), dtype=np.uint32)
         outF.close()
-
-        f = open(self.path_out[0]+"_ske.txt", 'w')
 
         #Process Parallel
         for i in range(len(self.BLOCKS)):
@@ -264,7 +236,6 @@ class BlockProcess():
 
         self._calcUnions()
 
-        f.close()
         for i in range(len(self.BLOCKS)):
             if self.verbose==1:
                 print "Saveing:",i+1,len(self.BLOCKS)
