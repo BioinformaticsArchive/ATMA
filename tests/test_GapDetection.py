@@ -15,6 +15,7 @@ class test_gapDetection:
         g.pred = data_pre
         g.gaps = data_gap
         g.run()
+        assert len(g.Features) == 16
 
 if __name__ == "__main__":
     import nose
