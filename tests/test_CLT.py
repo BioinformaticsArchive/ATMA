@@ -5,13 +5,16 @@ import h5py
 import numpy
 
 
-
 class testcase:
 
 
     def test_CLT_basic(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus000.h5","volume/data"]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -24,6 +27,10 @@ class testcase:
     def test_CLT_empty1(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus001.h5","volume/data"]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
         a.sigmaSmooth = 1
         a.thresMembra = 2
         a.sizeFilter = [20,1000]
@@ -37,6 +44,10 @@ class testcase:
     def test_CLT_empty2(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus002.h5","volume/data"]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [10e5,10e6]
@@ -50,6 +61,10 @@ class testcase:
     def test_CLT_empty3(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus003.h5","volume/data"]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
         a.sigmaSmooth = 0.7
         a.thresMembra = -1
         a.sizeFilter = [0,10e10]
@@ -65,7 +80,7 @@ class testcase:
 
         a=CLT()
         a.path_in = ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus004.h5","volume/data"]
         a.Sub_Volume = [[0,100], [0,100], [0,17]]
         a.blockSize = [50,50,50]
         a.helo = 10
@@ -76,35 +91,6 @@ class testcase:
         res = a.res[::]
         assert res.shape == (100,100,17)
 
-
-    def test_compareBlockVsNormal(self):
-        
-        a=CLT()
-        a.path_in = ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus002.h5","volume/data"]
-        a.Sub_Volume = [[0,150], [0,150], [0,80]]
-        a.blockSize = [80,80,80]
-        a.helo = 20
-        a.sigmaSmooth = 0.7
-        a.thresMembra = 0.7
-        a.sizeFilter = [20,1000]
-        a.run()
-        res = a.res[::]
-        assert res.shape == (150,150,80)
-
-
-        b=CLT()
-        b.path_in = ["./data/vagus001.h5","volume/data"]
-        b.sigmaSmooth = 0.7
-        b.thresMembra = 0.7
-        b.sizeFilter = [20,1000]
-        b.run()
-        res = b.res[::]
-
-        resB = a.res[::]!=0
-        resN = b.res[::]!=0
-
-        assert numpy.all( resB == resN )
 
 if __name__ == "__main__":
 

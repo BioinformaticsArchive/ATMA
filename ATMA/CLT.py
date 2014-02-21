@@ -53,21 +53,19 @@ class CLT():
     
 
     def run(self):
+
         self.predictionData = h5py.File(self.path_in[0])[self.path_in[1]]
 
-        if self.Sub_Volume == None:
-            self.res = self._Process(self.predictionData)
-        else:
-            B = BlockProcess()
-            B.path_in  = self.path_in
-            B.path_out = self.path_out
-            B.blockSize = self.blockSize
-            B.Sub_Volume = self.Sub_Volume
-            B.verbose = self.verbose
-            B.helo = self.helo
-            B.Process = self._Process 
-            B.run()
-            self.res = h5py.File(self.path_out[0])[self.path_out[1]]
+        B = BlockProcess()
+        B.path_in  = self.path_in
+        B.path_out = self.path_out
+        B.blockSize = self.blockSize
+        B.Sub_Volume = self.Sub_Volume
+        B.verbose = self.verbose
+        B.helo = self.helo
+        B.Process = self._Process 
+        B.run()
+        self.res = h5py.File(self.path_out[0])[self.path_out[1]]
 
 
 
