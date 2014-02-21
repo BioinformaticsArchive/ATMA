@@ -3,11 +3,12 @@ from ATMA.ParaOpti import ParaOpti
 
 a=CLT()
 a.path_in = ["/Data/vagus/data/pre.h5","volume/data"]
+a.path_in = ["./data/vagus001.h5", "volume/data"]
 a.path_out = ["/Data/vagus/res_test.h5","data"]
 #a.Sub_Volume = [[0,3750], [0,3750], [0,1000]]
-a.Sub_Volume = [[2000,2200], [2000,2200], [0,100]]
+#a.Sub_Volume = [[2000,2200], [2000,2200], [0,100]]
 #a.blockSize = [250,250,100]
-a.blockSize = [100,100,50]
+#a.blockSize = [100,100,50]
 a.helo = 20
 a.sigmaSmooth = 0.7
 a.thresMembra = 0.7
