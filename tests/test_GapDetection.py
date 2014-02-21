@@ -3,7 +3,7 @@ import h5py
 import numpy
 from ATMA.GapDetection import GapDetection
 
-data_pre = h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
+data_pre = h5py.File("./data/vagus001.h5")["volume/data"][::]
 data_axon = h5py.File("./data/vagus001_res.h5")["data/axons"][::]
 data_gap = h5py.File("./data/vagus001_res.h5")["data/gaps"][::]
 
