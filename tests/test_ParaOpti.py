@@ -19,7 +19,7 @@ class testcase:
 
         
         p = ParaOpti()
-        p.data = res
+        p.res = res
         assert p.scoreVagus() > 10
 
     def test_lowScore(self):
@@ -34,7 +34,7 @@ class testcase:
 
         
         p = ParaOpti()
-        p.data = res
+        p.res = res
         assert p.scoreVagus() == 0
 
 
