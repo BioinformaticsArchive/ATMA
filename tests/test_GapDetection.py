@@ -1,7 +1,6 @@
 import unittest
 import h5py
 import numpy
-import vigra
 from ATMA.GapDetection import GapDetection
 
 data_pre = h5py.File("./data/vagus001.h5")["volume/data"][:,:,:,0]
