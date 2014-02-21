@@ -125,12 +125,15 @@ class BlockProcess():
         #Union = open(self.path_out+"_uni.txt",'a+')
         outF = h5py.File(self.path_out[0], "r+")
         outF.create_dataset(str(i), data=tmp_res)
-
-        out=outF["volume/data"]
+        out=outF[self.path_out[1]+"/axons"]
+        out_gaps=outF[self.path_out[1]+"/gaps"]
+        #import numpy
+        #print numpy.sum(gaps)
 
         S=tmp_res.shape
         tmp_old  = out[R[0]:R[1],R[2]:R[3],R[4]:R[5]]
         out[r[0]:r[1],r[2]:r[3],r[4]:r[5]]=tmp_res[-h[0]:S[0]-h[1],-h[2]:S[1]-h[3],-h[4]:S[2]-h[5]]
+        out_gaps[r[0]:r[1],r[2]:r[3],r[4]:r[5]]=gaps[-h[0]:S[0]-h[1],-h[2]:S[1]-h[3],-h[4]:S[2]-h[5]]
         outF.close()
 
         l.release()
@@ -149,7 +152,7 @@ class BlockProcess():
 
             h,D,d,R,r=self.BLOCKS[i]
             tmp_res = outF[str(i)][::v,::v,::v]
-            tmp_old = outF["volume/data"][R[0]:R[1]:v,R[2]:R[3]:v,R[4]:R[5]:v]
+            tmp_old = outF[self.path_out[1]+"/axons"][R[0]:R[1]:v,R[2]:R[3]:v,R[4]:R[5]:v]
             Picks=np.unique(tmp_old)
 
             for c in Picks:
@@ -177,7 +180,7 @@ class BlockProcess():
 
         l.acquire()
         outF = h5py.File(self.path_out[0], "r+")
-        out=outF["volume/data"]
+        out=outF[self.path_out[1]+"/axons"]
         tmp      = np.copy(out[ r[0]:r[1], r[2]:r[3], r[4]:r[5]])
         outF.close()
         l.release()
@@ -191,11 +194,12 @@ class BlockProcess():
 
 
         outF = h5py.File(self.path_out[0], "r+")
-        out=outF["volume/data"]
+        out=outF[self.path_out[1]+"/axons"]
         out[ r[0]:r[1], r[2]:r[3], r[4]:r[5]]=tmp
         outF.close()
 
     def run(self):
+
         self.path_pre= h5py.File(self.path_in[0])[self.path_in[1]]
         lock = Lock()
         self.REMAP=[]
@@ -217,7 +221,8 @@ class BlockProcess():
         UnionF.close()
 
         outF = h5py.File(self.path_out[0], "w")
-        outF.create_dataset(self.path_out[1], (S0,S1,S2), dtype=np.uint32)
+        outF.create_dataset(self.path_out[1]+"/axons", (S0,S1,S2), dtype=np.uint32)
+        outF.create_dataset(self.path_out[1]+"/gaps", (S0,S1,S2), dtype=np.uint8)
         outF.close()
 
         #Process Parallel

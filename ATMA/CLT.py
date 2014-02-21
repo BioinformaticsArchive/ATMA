@@ -10,6 +10,7 @@ class CLT():
     path_out = None
     blockSize = None
     Sub_Volume = None
+    blockSize  = [50,50,50]
     helo = 10
     Workers = 8
     verbose = 0
@@ -73,7 +74,8 @@ class CLT():
         B.helo = self.helo
         B.Process = self._Process 
         B.run()
-        self.res = h5py.File(self.path_out[0])[self.path_out[1]]
+        self.res = h5py.File(self.path_out[0])[self.path_out[1]+"/axons"]
+        self.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
 
 
 
