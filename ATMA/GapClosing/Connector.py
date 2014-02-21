@@ -94,7 +94,7 @@ class GapFinder():
             newGap = DataStructures.Gap()
             newGap.Ep1 = ep1
             newGap.Ep2 = ep2
-            newGap.Position = (ep1.Position+ep2.Position)/2
+            newGap.Position = (numpy.array(ep1.Position)+numpy.array(ep2.Position))/2
 
             self.GList.append(newGap)
 

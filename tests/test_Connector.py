@@ -1,5 +1,6 @@
 import unittest
 import ATMA
+from ATMA.GapClosing.DataStructures import *
 import numpy
 
 class testcase:
@@ -7,7 +8,7 @@ class testcase:
     def setup(self):
         TList=[]
         for i in range(7):
-            newToken=ATMA.GapClosing.DataStructures.Token()
+            newToken= Token()
             TList.append( newToken )
 
         for t in range(len(TList)):
@@ -15,7 +16,7 @@ class testcase:
 
         EList=[]
         for i in range(7):
-            newEndPoint=ATMA.GapClosing.DataStructures.EndPoint()
+            newEndPoint= EndPoint()
             newEndPoint.Thickness=i
             newEndPoint.Token=TList[i]
             EList.append( newEndPoint )
