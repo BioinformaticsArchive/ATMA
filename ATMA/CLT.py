@@ -78,4 +78,3 @@ class CLT():
         self.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
 
 
-
