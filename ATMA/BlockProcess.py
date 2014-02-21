@@ -111,12 +111,13 @@ class BlockProcess():
         where i is the block number of the full dataset 
         and c the component number of the component in the subblock.
         '''
-        res=self.Process(data)
+        res, gaps = self.Process(data)
 
         #Prozess Sub-block
         tmp_res  =  np.array(res,dtype=np.uint32)
         B=((i+1)*(2**16))
         tmp_res[tmp_res!=0] += B
+
 
 
         #Write Results

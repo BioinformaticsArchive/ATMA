@@ -2,6 +2,7 @@ import Segmentation
 import GapClosing
 from BlockProcess import BlockProcess
 import h5py
+import numpy
 
 class CLT():
 
@@ -49,7 +50,14 @@ class CLT():
         # use tokens to reconstruct origin segmentation data
         d=GapClosing.Tokenizer.Token2Data(TList,seg.shape)
         d.run()
-        return d.data
+
+        #Create Volume that contains all gaps
+        Gaps = numpy.zeros(seg.shape)
+        for g in GList:
+            x,y,z = g.Position
+            Gaps[x,y,z]=1
+
+        return d.data, Gaps
     
 
     def run(self):

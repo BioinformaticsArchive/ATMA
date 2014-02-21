@@ -4,7 +4,9 @@ import numpy
 import h5py
 
 def func(data):
-    return data[:,:,:,0]>0.5
+    res = data[:,:,:,0]>0.5
+    gaps = 0
+    return res, gaps
 
 class testcase:
 
@@ -18,7 +20,7 @@ class testcase:
         res_Block = h5py.File("/tmp/res.h5")["volume/data"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
-        res_Norm = func(data_in)
+        res_Norm = func(data_in)[0]
 
         assert numpy.mean(res_Block!=0) == numpy.mean(res_Norm!=0)
 
@@ -35,7 +37,7 @@ class testcase:
         res_Block = h5py.File("/tmp/res1.h5")["volume/data"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
-        res_Norm = func(data_in)
+        res_Norm = func(data_in)[0]
 
         assert numpy.mean(res_Block!=0) == numpy.mean(res_Norm!=0)
         
@@ -50,7 +52,7 @@ class testcase:
         res_Block = h5py.File("/tmp/res3.h5")["volume/data"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
-        res_Norm = func(data_in)
+        res_Norm = func(data_in)[0]
 
         assert numpy.mean(res_Block!=0) == numpy.mean(res_Norm!=0)
 
