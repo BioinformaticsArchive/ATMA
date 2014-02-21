@@ -11,6 +11,7 @@ class testcase:
 
         a=CLT()
         a.path_in = ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/res1.h5","data"]
         a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
@@ -26,6 +27,7 @@ class testcase:
 
         a=CLT()
         a.path_in = ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/res2.h5","data"]
         a.sigmaSmooth = 0.7
         a.thresMembra = 1
         a.sizeFilter = [20,1000]
