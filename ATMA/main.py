@@ -1,5 +1,6 @@
 from GUI import *
 import GUI
+from CLT import CLT
 import Segmentation
 import GapClosing
 import h5py
@@ -15,7 +16,6 @@ class ATMA_GUI(QtGui.QWidget):
 
     def initUI(self):
         self.grid = QtGui.QGridLayout()
-        #self.grid.setSpacing(18)
 
         #Buttons
         self._button(0, self._openFile, "Open File")
@@ -24,23 +24,17 @@ class ATMA_GUI(QtGui.QWidget):
         self.labRange = self._label(2, self._set_range, "Range" , "[x0,x1,y0,y1,z0,z1]")
         self._button(3, self._viewPrediction, "View Prediction")
 
-        self._text(5, "Segmentation")
+        self._text(5, "Tracing")
         self._label(6, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
         self._label(7, self._set_thresMembra, "Thrasholding" , "Level [float]")
         self._label(8, self._set_thresMembra, "Closing" , "Pixel [intager]")
-        self._button2(9, self._runSegmentation, "Preview",self._runSegmentation, "Parameter Estimation")
+        self._label(9, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
+        self._label(10, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
 
-        self._text(11, "Gap Closing")
-        #METHOD raider here !
-        self._label(12, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
-        self._label(13, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
-        self._button2(14, self._runGapClosing, "Preview",self.test, "Train Classifier")
+        self._button(11, self._runGapClosing, "Preview")
 
 
-        self._text(16, "Node Detection")
-        self._button3(17, self.test, "Preview",self.test, "Training",self.test, "Done")
-        self._button(21, self._runSegmentation, "Run pipeline on subset"      )
-        self._button(22, self._runSegmentation, "Run pipeline on full dataset"      )
+        self._button3(20, self.test, "Preview",self.test, "Training",self.test, "Done")
         self._button(23, self._viewResults, "View Results" )
 
         #Maya Widget
@@ -127,9 +121,10 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _openFile(self):
 
-        self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
-        #self.fname = "/Users/rwalecki/Dropbox/Projects/ATMA/tests/data/Volume001.h5"
+        #self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        self.fname = './data/vagus001.h5'
         self.FullData = h5py.File(self.fname)["volume/data"]
+        print self.FullData.shape
         self.labPath.setText(self.fname)
 
 
@@ -172,49 +167,34 @@ class ATMA_GUI(QtGui.QWidget):
     def _demo(self):
         self.M.visualization.update_plot()
 
-    def _runSegmentation(self):
-        A=Segmentation.BioData.Nerve(self.data)
-        A.sigmaSmooth = self.sigmaSmooth
-        A.thresMembra = self.thresMembra
-        A.sizeFilter = [20,1000]
-        A.run()
-        self.seg=A.seg
-
-        #A=Segmentation.BioData.Cortex(self.data)
+    #def _runSegmentation(self):
+        #A=Segmentation.BioData.Nerve(self.data)
         #A.sigmaSmooth = self.sigmaSmooth
         #A.thresMembra = self.thresMembra
         #A.sizeFilter = [20,1000]
         #A.run()
         #self.seg=A.seg
 
-        self._clear()
-        GUI.DataVisualizer.rawSlider( self.data)
-        GUI.DataVisualizer.segmentation( self.seg)
+        ##A=Segmentation.BioData.Cortex(self.data)
+        ##A.sigmaSmooth = self.sigmaSmooth
+        ##A.thresMembra = self.thresMembra
+        ##A.sizeFilter = [20,1000]
+        ##A.run()
+        ##self.seg=A.seg
+
+        #self._clear()
+        #GUI.DataVisualizer.rawSlider( self.data)
+        #GUI.DataVisualizer.segmentation( self.seg)
 
     def _runGapClosing(self):
 
-        # compute tokens end endpoints from the segmented data
-        b=GapClosing.Tokenizer.Data2Token(self.seg)
-        b.run()
-        EList = b.EList
-        TList = b.TList
-
-
-        # metch endpoints and compute gaps
-        c=GapClosing.Connector.GapFinder(EList)
-        c.run()
-        GList = c.GList
-
-        # from gaplist, compute token unions
-        d=GapClosing.Connector.TokenRemap( GList )
-        d.run()
-
-        # use tokens to reconstruct origin segmentation data
-        d=GapClosing.Tokenizer.Token2Data(TList,self.seg.shape)
-        d.run()
-        self.res=d.data
-
-        GUI.DataVisualizer.rawSlider( self.data)
-        GUI.DataVisualizer.segmentation( self.res )
-
-    def _runNodeDetection(self):pass
+        a=CLT()
+        a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/vagus000fff.h5","data"]
+        a.blockSize = [50,50,50]
+        a.helo = 10
+        a.sigmaSmooth = self.sigmaSmooth
+        a.thresMembra = self.thresMembra
+        a.sizeFilter = [20,1000]
+        a.verbose = 1
+        a.run()

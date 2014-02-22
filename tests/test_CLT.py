@@ -15,7 +15,6 @@ class testcase:
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
-        a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [20,1000]
         a.run()
@@ -34,7 +33,6 @@ class testcase:
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
-        a.sigmaSmooth = 1
         a.thresMembra = 2
         a.sizeFilter = [20,1000]
         a.run()
@@ -51,7 +49,6 @@ class testcase:
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
-        a.sigmaSmooth = 0.7
         a.thresMembra = 0.7
         a.sizeFilter = [10e5,10e6]
         a.run()
@@ -67,7 +64,6 @@ class testcase:
         a.path_out = ["/tmp/vagus003.h5","data"]
         a.blockSize = [50,50,50]
         a.helo = 10
-        a.sigmaSmooth = 0.7
         a.sigmaSmooth = 0.7
         a.thresMembra = -1
         a.sizeFilter = [0,10e10]
