@@ -200,13 +200,14 @@ class BlockProcess():
 
     def run(self):
 
-        self.path_pre= h5py.File(self.path_in[0])[self.path_in[1]]
+        DATA=h5py.File(self.path_in[0])
+        data_pre=DATA[self.path_in[1]]
         lock = Lock()
         self.REMAP=[]
 
         #Set Range
         if np.any(self.Sub_Volume==None):
-            S=self.path_pre.shape
+            S=data_pre.shape
             self.Sub_Volume=[[0,S[0]],[0,S[1]],[0,S[2]]]
         [[sx0,sx1],[sy0,sy1],[sz0,sz1]]=self.Sub_Volume
         S0,S1,S2=sx1-sx0,sy1-sy0,sz1-sz0
@@ -232,13 +233,14 @@ class BlockProcess():
             #if self.QTbar!=0:
                 #self.QTbar.setValue(70*(i+1)/len(self.BLOCKS))
             h,D,d,R,r=self.BLOCKS[i]
-            data = self.path_pre[D[0]:D[1],D[2]:D[3],D[4]:D[5],:]
+            data = data_pre[D[0]:D[1],D[2]:D[3],D[4]:D[5],:]
             Process(target=self._ProcessBlock, args=(data,i,R,r,h,UnionF,lock)).start()
             while len(multiprocessing.active_children())>=self.Workers:
                 time.sleep(1)
 
         while len(multiprocessing.active_children())!=0:
             time.sleep(1)
+        DATA.close()
 
         self._calcUnions()
 
