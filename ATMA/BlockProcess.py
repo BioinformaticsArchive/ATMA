@@ -4,6 +4,7 @@ from scipy import ndimage
 import time
 import re
 import h5py
+import os
 from GapClosing.DataStructures import UnionFinder as UF
 
 from multiprocessing import Process, Lock
@@ -199,7 +200,9 @@ class BlockProcess():
         outF.close()
 
     def run(self):
-
+      
+        if os.path.isfile(self.path_out[0]):
+            os.remove(self.path_out[0])
         DATA=h5py.File(self.path_in[0])
         data_pre=DATA[self.path_in[1]]
         lock = Lock()
@@ -225,6 +228,7 @@ class BlockProcess():
         outF.create_dataset(self.path_out[1]+"/axons", (S0,S1,S2), dtype=np.uint32)
         outF.create_dataset(self.path_out[1]+"/gaps", (S0,S1,S2), dtype=np.uint8)
         outF.close()
+
 
         #Process Parallel
         for i in range(len(self.BLOCKS)):

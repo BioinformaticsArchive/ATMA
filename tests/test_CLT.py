@@ -6,12 +6,29 @@ import numpy
 
 
 class testcase:
+    
+    def test_CLT_basic(self):
+
+        a=CLT()
+        a.path_in= ["./data/vagus001.h5","volume/data"]
+        a.path_out = ["/tmp/test.h5","data"]
+        a.Sub_Volume = [[0,50],[0,50],[0,50]]
+        a.blockSize = [25,25,25]
+        a.helo = 10
+        a.sigmaSmooth = 0.7
+        a.thresMembra = 0.7
+        a.sizeFilter = [20,1000]
+
+        #test if executing twice does not fail
+        a.run()
+        a.run()
+        
 
 
     def test_CLT_basic(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus000.h5","data"]
+        a.path_out = ["/tmp/test.h5","data"]
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
@@ -29,7 +46,7 @@ class testcase:
     def test_CLT_empty1(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus001.h5","data"]
+        a.path_out = ["/tmp/test.h5","data"]
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
@@ -45,7 +62,7 @@ class testcase:
     def test_CLT_empty2(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus002.h5","data"]
+        a.path_out = ["/tmp/test.h5","data"]
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
@@ -61,7 +78,7 @@ class testcase:
     def test_CLT_empty3(self):
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus003.h5","data"]
+        a.path_out = ["/tmp/test.h5","data"]
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = 0.7
@@ -79,7 +96,7 @@ class testcase:
 
         a=CLT()
         a.path_in = ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus004.h5","data"]
+        a.path_out = ["/tmp/test.h5","data"]
         a.Sub_Volume = [[0,100], [0,100], [0,17]]
         a.blockSize = [50,50,50]
         a.helo = 10

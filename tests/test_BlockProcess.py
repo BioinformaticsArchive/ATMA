@@ -14,10 +14,10 @@ class testcase:
     
         B = BlockProcess()
         B.path_in  = ["./data/vagus001.h5","volume/data"]
-        B.path_out = ["/tmp/res.h5","data"]
+        B.path_out = ["/tmp/test.h5","data"]
         B.Process = func 
         B.run()
-        res_Block = h5py.File("/tmp/res.h5")["data/axons"][::]
+        res_Block = h5py.File("/tmp/test.h5")["data/axons"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
         res_Norm = func(data_in)[0]
@@ -28,13 +28,13 @@ class testcase:
     
         B = BlockProcess()
         B.path_in  = ["./data/vagus001.h5","volume/data"]
-        B.path_out = ["/tmp/res1.h5","data"]
+        B.path_out = ["/tmp/test.h5","data"]
         B.blockSize = [75, 75, 25]
         B.helo = 10
         B.Process = func 
         B.Workers=6
         B.run()
-        res_Block = h5py.File("/tmp/res1.h5")["data/axons"][::]
+        res_Block = h5py.File("/tmp/test.h5")["data/axons"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
         res_Norm = func(data_in)[0]
@@ -45,11 +45,11 @@ class testcase:
     
         B = BlockProcess()
         B.path_in  = ["./data/vagus001.h5","volume/data"]
-        B.path_out = ["/tmp/res3.h5","data"]
+        B.path_out = ["/tmp/test.h5","data"]
         B.blockSize = [150, 150, 80]
         B.Process = func 
         B.run()
-        res_Block = h5py.File("/tmp/res3.h5")["data/axons"][::]
+        res_Block = h5py.File("/tmp/test.h5")["data/axons"][::]
 
         data_in  = h5py.File("./data/vagus001.h5")["volume/data"][::]
         res_Norm = func(data_in)[0]
