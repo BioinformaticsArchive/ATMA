@@ -34,14 +34,16 @@ class GapDetection():
         '''
         
         self.gapL=[]
-        self.labL=[]
+        self.Labels=[]
         for z in range(gaps.shape[2]):
             pos=numpy.argwhere(gaps[:,:,z])
             if len(pos)!=0:
                 for p in pos:
                     [x,y] = p
                     self.gapL.append([x,y,z])
-                    self.labL.append(0)
+
+                    # -1 means not labeled yet
+                    self.Labels.append(-1)
 
 
     def _calcFeatureList(self):
@@ -82,15 +84,72 @@ class GapDetection():
                 f.append(l)
                 f.append(d)
 
-
+            f= numpy.array(f) 
             F.append(f)
 
 
         self.Features = F
+        self.Features= numpy.array(self.Features, dtype=numpy.float32)
 
+
+    def _runLabelTool(self):
+        self.Labels[4]=1
+        self.Labels[6]=1
+        self.Labels[1]=1
+        self.Labels[9]=0
+        self.Labels[8]=0
+
+        #   labeled subset of all feature vectors with:
+        #   1: node of ranvier
+        #   0: not a node of ranvier
+
+        self.Feat=[]
+        self.Lab=[]
+        for l in numpy.argwhere(numpy.array(self.Labels)==1).T[0]:
+            self.Feat.append(self.Features[l])
+            self.Lab.append([1])
+        
+        for l in numpy.argwhere(numpy.array(self.Labels)==0).T[0]:
+            self.Feat.append(self.Features[l])
+            self.Lab.append([0])
+        
+        self.Feat= numpy.array(self.Feat, dtype=numpy.float32)
+        self.Lab= numpy.array(self.Lab, dtype=numpy.uint32)
+
+
+    def _runTraining(self):
+        r = vigra.learning.RandomForest()
+        r.learnRF(self.Feat, self.Lab)
+
+        #probability of being a node of ranvier
+        self.Pred = r.predictProbabilities(self.Features)[:,1]
+
+    def _saveResults(self):
+        Nodes=numpy.argwhere(self.Pred>0.5).T[0]
+        
+        f = open("/tmp/oo.txt", 'w')
+        f.write("X;\tY;\tZ;\tP;\n")
+        for n in Nodes:
+            X,Y,Z = self.gapL[n]
+            P = self.Pred[n]
+            print P
+            f.write(str(int(X))+';\t'+\
+                    str(int(Y))+';\t'+\
+                    str(int(Z))+';\t'+\
+                    str(float(P))+';'+\
+                    '\n')
 
 
     def run(self):
 
         self._calcGapList(self.gaps)
         self._calcFeatureList()
+        self._runLabelTool()
+        self._runTraining()
+        self._saveResults()
+        
+
+
+
+
+
