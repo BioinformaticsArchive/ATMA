@@ -1,6 +1,7 @@
 from GUI import *
+import vigra
 import GUI
-import windows 
+import Training
 from CLT import CLT
 import Segmentation
 import GapClosing
@@ -37,12 +38,22 @@ class ATMA_GUI(QtGui.QWidget):
 
         self._button(11, self._runGapClosing, "Preview")
         
-        self.pushButtonWindow = QtGui.QPushButton(self)
-        self.pushButtonWindow.setText("Train Node Classifier")
-        self.pushButtonWindow.clicked.connect(self.runNodeDetection)
+        
+        self.NDInit=0
+        self.NodeClas= QtGui.QPushButton(self)
+        self.NodeClas.setText("Train Node Classifier")
+        self.NodeClas.clicked.connect(self.runNodeDetection)
+        self.grid.addWidget(self.NodeClas, 12, 0,1,3)
 
-        self.ND = windows.Training(self)
-        self.grid.addWidget(self.pushButtonWindow, 12, 0,1,3)
+        self.NodeClasTrue= QtGui.QPushButton(self)
+        self.NodeClasTrue.setText("True")
+        self.NodeClasTrue.clicked.connect(self.clickTRUE)
+        self.grid.addWidget(self.NodeClasTrue, 26, 3,1,5)
+        
+        self.NodeClasFalse= QtGui.QPushButton(self)
+        self.NodeClasFalse.setText("False")
+        self.NodeClasFalse.clicked.connect(self.clickFALSE)
+        self.grid.addWidget(self.NodeClasFalse, 26, 8,1,5)
 
 
 
@@ -50,8 +61,8 @@ class ATMA_GUI(QtGui.QWidget):
         self._button(23, self._viewResults, "View Results" )
 
         #Maya Widget
-        self.M = MayaviQWidget(self)
-        self.grid.addWidget(self.M, 0, 3,24,1)
+        self.M = MayaviQWidget()
+        self.grid.addWidget(self.M, 0, 3,24,10)
 
         #Layout
         self.setGeometry(2300, 0, 1250, 850)
@@ -59,14 +70,60 @@ class ATMA_GUI(QtGui.QWidget):
         self.setWindowTitle('ATMA')
         self.show()
 
-        
-    @QtCore.pyqtSlot()
+       
     def runNodeDetection(self):
-        self.ND.axons = h5py.File(self.path_out[0])[self.path_out[1]+"/axons"]
+
+        self.Labels=[]
+        self.Features=[]
+        self.ND = Training.GapDetection()
         self.ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
-        self.ND.exec_()
+        self.ND.pred_volume = h5py.File(self.path_in[0])[self.path_in[1]]
+        self.ND.Range= self.Range
+        self.ND.calcGapList()
+
+        self.f,volume = self.ND.GetExamples()
+
+        self.M.visualization.clear()
+        GUI.DataVisualizer.rawSlider( volume )
 
 
+    def clickTRUE(self):
+        self.Labels.append([1])
+        self.Features.append(self.f)
+        self.f,volume = self.ND.GetExamples()
+
+        self.M.visualization.clear()
+        GUI.DataVisualizer.rawSlider( volume )
+        print self.Labels
+        print self.Features
+
+        r = vigra.learning.RandomForest()
+        Feat = numpy.array(self.Features, dtype=numpy.float32)
+        Lab = numpy.array(self.Labels, dtype=numpy.uint32)
+        r.learnRF(Feat, Lab)
+        pred=r.predictProbabilities(Feat)
+        print pred
+        print Lab
+
+
+
+    def clickFALSE(self):
+        self.Labels.append([0])
+        self.Features.append(self.f)
+        self.f,volume = self.ND.GetExamples()
+
+        self.M.visualization.clear()
+        GUI.DataVisualizer.rawSlider( volume )
+        print self.Labels
+        print self.Features
+        
+        r = vigra.learning.RandomForest()
+        Feat= numpy.array(self.Features, dtype=numpy.float32)
+        Lab= numpy.array(self.Labels, dtype=numpy.uint32)
+        r.learnRF(Feat, Lab)
+        pred=r.predictProbabilities(Feat)
+        print pred
+        print Lab
 
 
     #Widgets
@@ -140,8 +197,11 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _openFile(self):
 
-        #self.path_in[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
-        self.path_in = ['./data/vagus001.h5',"volume/data"]
+        self.path_in = ['', '']
+        self.path_in[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        self.path_in[1] = 'volume/data'
+        print self.path_in
+        #self.path_in = ['./data/vagus001.h5',"volume/data"]
         self.FullData = h5py.File(self.path_in[0])[self.path_in[1]]
         self.labPath.setText(self.path_in[0])
 
@@ -172,7 +232,7 @@ class ATMA_GUI(QtGui.QWidget):
         self.data=self.FullData[L[0]:L[1],L[2]:L[3],L[4]:L[5],0]
 
         self._clear()
-        GUI.DataVisualizer.rawSlider( self.data)
+        GUI.DataVisualizer.rawSlider( self.data )
 
     def _viewResults(self):
         GUI.DataVisualizer.segmentation( self.res )
@@ -187,13 +247,14 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _runGapClosing(self):
         x0,x1,y0,y1,z0,z1=self.Range
+        print x0
 
         a=CLT()
         a.path_in= self.path_in
         a.path_out = self.path_out
         a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
-        a.blockSize = [50,50,50]
-        a.helo = 10
+        a.blockSize = [200,200,200]
+        a.helo = 30
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = [20,1000]

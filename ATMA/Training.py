@@ -17,11 +17,13 @@ class GapDetection():
     gaps = None
     pred_volume = None # prediction volume data
     pred_node = None # prediction for node of ranvier 
+    i=0     # id of current example
     
 
     def __init__(self):pass
 
-    def _calcGapList(self,gaps):
+    def calcGapList(self):
+        x0,x1,y0,y1,z0,z1=self.Range
         '''
 
         Computing the list that contains all gaps
@@ -37,12 +39,12 @@ class GapDetection():
         
         self.gapL=[]
         self.Labels=[]
-        for z in range(gaps.shape[2]):
-            pos=numpy.argwhere(gaps[:,:,z])
+        for z in range(self.gaps.shape[2]):
+            pos=numpy.argwhere(self.gaps[:,:,z])
             if len(pos)!=0:
                 for p in pos:
                     [x,y] = p
-                    self.gapL.append([x,y,z])
+                    self.gapL.append([x+x0,y+y0,z+z0])
 
                     # -1 means not labeled yet
                     self.Labels.append(-1)
@@ -94,7 +96,7 @@ class GapDetection():
     def _runLabelTool(self):
 
         # training examples at once
-        N=4
+        N=9
 
         first_nonlabeled=numpy.min(numpy.argwhere(self.Labels==-1))
         lab_current=range(first_nonlabeled,first_nonlabeled+N)
@@ -112,22 +114,15 @@ class GapDetection():
             tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
             Examples.append([tmp_volume,g])
 
-        print len(Examples)
-        # HERE THE LABELTOOL! 
-        # use the examples array (length = 4) for visualization
-        # then, label this 4 examples and the resulting array has to be used
-        # to update the self.Labels array
-        
-        #1 ranvier 
-        #0 else 
+         
         for i in lab_current:
             self.Labels[i]=i%2
 
-        print lab_current, self.Labels
         
         
         self.Feat=[]
         self.Lab=[]
+
         for l in numpy.argwhere(numpy.array(self.Labels)==1).T[0]:
             self.Feat.append(self.Features[l])
             self.Lab.append([1])
@@ -161,24 +156,66 @@ class GapDetection():
                     '\n')
 
 
-    def run(self):
+    def GetExamples(self):
+
+        s = self.pred_volume.shape
+        M = 24
+
+        if self.i<len(self.gapL):
+            g=self.gapL[self.i]
+            V,f = [],[]
+            x, y, z = g
+            x0, x1 = max(0,x-M), min(s[0],x+M)
+            y0, y1 = max(0,y-M), min(s[1],y+M)
+            z0, z1 = max(0,z-M), min(s[2],z+M)
+
+            print x0,x1,y0,y1,z0,z1
+            print self.pred_volume.shape
+            tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
+
+            for i in numpy.arange(4,13,2):
+                V.append(rayFeatures(tmp_volume[:,:,:,0],i))
+
+            for i in numpy.arange(0.5,6,0.5):
+                V.append(vigra.gaussianSmoothing(tmp_volume[:,:,:,0],i))
+                V.append(vigra.gaussianSmoothing(tmp_volume[:,:,:,1],i))
+                V.append(vigra.gaussianSmoothing(tmp_volume[:,:,:,2],i))
+
+            
+            for v in V:
+                s1, s2, s3 = v.shape
+                c = v[s1/2,s2/2,s3/2]
+                l = numpy.mean(v[s1/2,s2/2,:])
+                d = numpy.mean(v[:,:,s3/2])
+                f.append(c)
+                f.append(l)
+                f.append(d)
+
+            f=numpy.array(f) 
+        else:
+            return 0,0
+
+        self.i+=1
+
+        return f,tmp_volume[:,:,:,0]
+
         #   self.Features contains all Features 
         #   self.Label contains all labels and cann be updated by 
+        #self._calcFeatureList()
+
+    #def run(self):
         #   _runLabelTool
 
         #at startup
-        self._calcGapList(self.gaps)
-        self._calcFeatureList()
 
         #with a click, the labeltool should start
         #after labeling train the classifire
-        for i in range(3):
-            self._runLabelTool()
-            self._runTraining()
+        #self._runLabelTool()
+        #self._runTraining()
 
         #run labeltool again on other nodes and see predictions
         #or stop labeling and run prediction on all gaps
-        self._saveResults()
+        #self._saveResults()
         
 
 

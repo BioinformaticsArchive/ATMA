@@ -1,10 +1,15 @@
-from PyQt4 import QtCore, QtGui
+#from PyQt4 import QtCore, QtGui
+from GUI import *
+import Training
 
-class Training(QtGui.QDialog):
+class Labeling(QtGui.QDialog):
+    Ginitial = 0
 
     def __init__(self, parent=None):
-        super(Training, self).__init__(parent)
+        super(Labeling, self).__init__(parent)
         self.grid = QtGui.QGridLayout()
+        
+
 
         self.a=[]
         for i in range(12):
@@ -13,7 +18,7 @@ class Training(QtGui.QDialog):
         
         self.k=3
         b={}
-        self.w={}
+        self.Maya={}
         for X in range(self.k):
             for Y in range(self.k):
                 x, y = 2*X, 2*Y
@@ -27,12 +32,13 @@ class Training(QtGui.QDialog):
                 self.connect(b[x,y,1], QtCore.SIGNAL("clicked()"), lambda arg=[x,y,1]: self.clicked(arg))
                 self.connect(b[x,y,2], QtCore.SIGNAL("clicked()"), lambda arg=[x,y,2]: self.clicked(arg))
 
-                self.w[x,y]= QtGui.QTextBrowser(self)
-                self.w[x,y].append("This is a QTextBrowser!")
+                #self.w[x,y]= QtGui.QTextBrowser(self)
+                self.Maya[x,y] = MayaviQWidget(self)
+                #self.w[x,y].append("This is a QTextBrowser!")
 
                 self.grid.addWidget(b[x,y,1],1+x,0+y,1,1)
                 self.grid.addWidget(b[x,y,2],1+x,1+y,1,1)
-                self.grid.addWidget(self.w[x,y],0+x,0+y,1,2)
+                self.grid.addWidget(self.Maya[x,y],0+x,0+y,1,2)
 
         next = QtGui.QPushButton(self)
         next.setText("Next Examples")
@@ -43,8 +49,9 @@ class Training(QtGui.QDialog):
         self.setGeometry(2300, 0, 1250, 850)
         self.setLayout(self.grid)
 
+
     def clicked(self,arg):
-        print self.axons.shape
+        
         [x,y,l] = arg
         x/=2
         y/=2
@@ -52,8 +59,32 @@ class Training(QtGui.QDialog):
         print id,l
 
     def clickNext(self,arg):
+        if self.Ginitial==0:
+            self.Ginitial = 1
+            print "initial"
+
+            self.Labels=[]
+            self.Features=[]
+            self.g = Training.GapDetection()
+            self.g.pred_volume = self.pre 
+            self.g.gaps = self.gaps
+
+            self.g.calcGapList()
+        F,E = self.g.GetExamples()
+        for V in E:
+            print V.shape
+        print len(F)
+        self.Maya[2,2].visualization.update_plot()
+
+
+
+        print self.axons.shape
+        print self.pre.shape
+        x0,x1,y0,y1,z0,z1 = self.Range
+        print x0,y0,z0
+
         for X in range(self.k):
             for Y in range(self.k):
                 x, y = 2*X, 2*Y
-                self.w[x,y].append(str(self.i))
-                self.i+=1
+                #self.w[x,y].append(str(self.i))
+                #self.i+=1
