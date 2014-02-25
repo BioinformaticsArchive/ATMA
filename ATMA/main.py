@@ -167,30 +167,13 @@ class ATMA_GUI(QtGui.QWidget):
     def _demo(self):
         self.M.visualization.update_plot()
 
-    #def _runSegmentation(self):
-        #A=Segmentation.BioData.Nerve(self.data)
-        #A.sigmaSmooth = self.sigmaSmooth
-        #A.thresMembra = self.thresMembra
-        #A.sizeFilter = [20,1000]
-        #A.run()
-        #self.seg=A.seg
-
-        ##A=Segmentation.BioData.Cortex(self.data)
-        ##A.sigmaSmooth = self.sigmaSmooth
-        ##A.thresMembra = self.thresMembra
-        ##A.sizeFilter = [20,1000]
-        ##A.run()
-        ##self.seg=A.seg
-
-        #self._clear()
-        #GUI.DataVisualizer.rawSlider( self.data)
-        #GUI.DataVisualizer.segmentation( self.seg)
-
     def _runGapClosing(self):
+        x0,x1,y0,y1,z0,z1=self.Range
 
         a=CLT()
         a.path_in= ["./data/vagus001.h5","volume/data"]
         a.path_out = ["/tmp/vagus000fff.h5","data"]
+        a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
         a.blockSize = [50,50,50]
         a.helo = 10
         a.sigmaSmooth = self.sigmaSmooth
@@ -198,3 +181,4 @@ class ATMA_GUI(QtGui.QWidget):
         a.sizeFilter = [20,1000]
         a.verbose = 1
         a.run()
+        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
