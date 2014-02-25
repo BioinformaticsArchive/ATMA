@@ -1,9 +1,9 @@
 from PyQt4 import QtCore, QtGui
 
-class TrainingWidget(QtGui.QDialog):
+class Training(QtGui.QDialog):
 
     def __init__(self, parent=None):
-        super(NodeDetection, self).__init__(parent)
+        super(Training, self).__init__(parent)
         self.grid = QtGui.QGridLayout()
 
         self.a=[]

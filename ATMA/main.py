@@ -1,5 +1,6 @@
 from GUI import *
 import GUI
+import windows 
 from CLT import CLT
 import Segmentation
 import GapClosing
@@ -40,7 +41,7 @@ class ATMA_GUI(QtGui.QWidget):
         self.pushButtonWindow.setText("Train Node Classifier")
         self.pushButtonWindow.clicked.connect(self.runNodeDetection)
 
-        self.ND = GapDetection.Widget.Training(self)
+        self.ND = windows.Training(self)
         self.grid.addWidget(self.pushButtonWindow, 12, 0,1,3)
 
 
