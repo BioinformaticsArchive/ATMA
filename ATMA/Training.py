@@ -15,7 +15,9 @@ class GapDetection():
     '''
 
     gaps = None
-    pred = None
+    pred_volume = None # prediction volume data
+    pred_node = None # prediction for node of ranvier 
+    
 
     def __init__(self):pass
 
@@ -44,7 +46,7 @@ class GapDetection():
 
                     # -1 means not labeled yet
                     self.Labels.append(-1)
-
+        self.Labels = numpy.array(self.Labels)
 
     def _calcFeatureList(self):
         '''
@@ -56,15 +58,13 @@ class GapDetection():
 
         F = []
         for g in self.gapL:
-
-
             V,f = [],[]
             x, y, z = g
             x0, x1 = max(0,x-M), min(s[0],x+M)
             y0, y1 = max(0,y-M), min(s[1],y+M)
             z0, z1 = max(0,z-M), min(s[2],z+M)
 
-            tmp_volume = self.pred[x0:x1,y0:y1,z0:z1,:]
+            tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
 
             for i in numpy.arange(4,13,2):
                 V.append(rayFeatures(tmp_volume[:,:,:,0],i))
@@ -91,18 +91,41 @@ class GapDetection():
         self.Features = F
         self.Features= numpy.array(self.Features, dtype=numpy.float32)
 
-
     def _runLabelTool(self):
-        self.Labels[4]=1
-        self.Labels[6]=1
-        self.Labels[1]=1
-        self.Labels[9]=0
-        self.Labels[8]=0
 
-        #   labeled subset of all feature vectors with:
-        #   1: node of ranvier
-        #   0: not a node of ranvier
+        # training examples at once
+        N=4
 
+        first_nonlabeled=numpy.min(numpy.argwhere(self.Labels==-1))
+        lab_current=range(first_nonlabeled,first_nonlabeled+N)
+
+        # create labeling data for visualization
+        M=40
+        s=self.pred_volume.shape
+        
+        Examples=[]
+        for g in lab_current:
+            x, y, z = self.gapL[g]
+            x0, x1 = max(0,x-M), min(s[0],x+M)
+            y0, y1 = max(0,y-M), min(s[1],y+M)
+            z0, z1 = max(0,z-M), min(s[2],z+M)
+            tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
+            Examples.append([tmp_volume,g])
+
+        print len(Examples)
+        # HERE THE LABELTOOL! 
+        # use the examples array (length = 4) for visualization
+        # then, label this 4 examples and the resulting array has to be used
+        # to update the self.Labels array
+        
+        #1 ranvier 
+        #0 else 
+        for i in lab_current:
+            self.Labels[i]=i%2
+
+        print lab_current, self.Labels
+        
+        
         self.Feat=[]
         self.Lab=[]
         for l in numpy.argwhere(numpy.array(self.Labels)==1).T[0]:
@@ -116,23 +139,21 @@ class GapDetection():
         self.Feat= numpy.array(self.Feat, dtype=numpy.float32)
         self.Lab= numpy.array(self.Lab, dtype=numpy.uint32)
 
-
     def _runTraining(self):
         r = vigra.learning.RandomForest()
         r.learnRF(self.Feat, self.Lab)
 
         #probability of being a node of ranvier
-        self.Pred = r.predictProbabilities(self.Features)[:,1]
+        self.pred_node= r.predictProbabilities(self.Features)[:,1]
 
     def _saveResults(self):
-        Nodes=numpy.argwhere(self.Pred>0.5).T[0]
+        Nodes=numpy.argwhere(self.pred_node>0.5).T[0]
         
         f = open("/tmp/oo.txt", 'w')
         f.write("X;\tY;\tZ;\tP;\n")
         for n in Nodes:
             X,Y,Z = self.gapL[n]
-            P = self.Pred[n]
-            print P
+            P = self.pred_node[n]
             f.write(str(int(X))+';\t'+\
                     str(int(Y))+';\t'+\
                     str(int(Z))+';\t'+\
@@ -141,11 +162,22 @@ class GapDetection():
 
 
     def run(self):
+        #   self.Features contains all Features 
+        #   self.Label contains all labels and cann be updated by 
+        #   _runLabelTool
 
+        #at startup
         self._calcGapList(self.gaps)
         self._calcFeatureList()
-        self._runLabelTool()
-        self._runTraining()
+
+        #with a click, the labeltool should start
+        #after labeling train the classifire
+        for i in range(3):
+            self._runLabelTool()
+            self._runTraining()
+
+        #run labeltool again on other nodes and see predictions
+        #or stop labeling and run prediction on all gaps
         self._saveResults()
         
 

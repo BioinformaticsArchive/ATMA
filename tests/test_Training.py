@@ -1,7 +1,7 @@
 import unittest
 import h5py
 import numpy
-from ATMA.GapDetection import GapDetection
+import ATMA.Training
 
 data_pre = h5py.File("./data/vagus001.h5")["volume/data"][::]
 data_axon = h5py.File("./data/vagus001_res.h5")["data/axons"][::]
@@ -11,8 +11,8 @@ class test_gapDetection:
 
     def test_simple(self):
 
-        g = GapDetection()
-        g.pred = data_pre
+        g = ATMA.Training.GapDetection()
+        g.pred_volume = data_pre
         g.gaps = data_gap
         g.run()
         assert len(g.Features) == 16
