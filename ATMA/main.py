@@ -8,7 +8,10 @@ import re
 import numpy
 
 
+
 class ATMA_GUI(QtGui.QWidget):
+    path_out = ["/tmp/vagus000fff.h5","data"]
+    path_in = ['./data/vagus001.h5','volume/data']
 
     def __init__(self):
         super(ATMA_GUI,self).__init__()
@@ -32,6 +35,14 @@ class ATMA_GUI(QtGui.QWidget):
         self._label(10, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
 
         self._button(11, self._runGapClosing, "Preview")
+        
+        self.pushButtonWindow = QtGui.QPushButton(self)
+        self.pushButtonWindow.setText("Train Node Classifier")
+        self.pushButtonWindow.clicked.connect(self.runNodeDetection)
+
+        self.ND = GapDetection.Widget.Training(self)
+        self.grid.addWidget(self.pushButtonWindow, 12, 0,1,3)
+
 
 
         self._button3(20, self.test, "Preview",self.test, "Training",self.test, "Done")
@@ -46,6 +57,13 @@ class ATMA_GUI(QtGui.QWidget):
         self.setLayout(self.grid)
         self.setWindowTitle('ATMA')
         self.show()
+
+        
+    @QtCore.pyqtSlot()
+    def runNodeDetection(self):
+        self.ND.axons = h5py.File(self.path_out[0])[self.path_out[1]+"/axons"]
+        self.ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
+        self.ND.exec_()
 
 
 
@@ -121,11 +139,10 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _openFile(self):
 
-        #self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
-        self.fname = './data/vagus001.h5'
-        self.FullData = h5py.File(self.fname)["volume/data"]
-        print self.FullData.shape
-        self.labPath.setText(self.fname)
+        #self.path_in[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        self.path_in = ['./data/vagus001.h5',"volume/data"]
+        self.FullData = h5py.File(self.path_in[0])[self.path_in[1]]
+        self.labPath.setText(self.path_in[0])
 
 
         #set initaial range of full volume
@@ -171,8 +188,8 @@ class ATMA_GUI(QtGui.QWidget):
         x0,x1,y0,y1,z0,z1=self.Range
 
         a=CLT()
-        a.path_in= ["./data/vagus001.h5","volume/data"]
-        a.path_out = ["/tmp/vagus000fff.h5","data"]
+        a.path_in= self.path_in
+        a.path_out = self.path_out
         a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
         a.blockSize = [50,50,50]
         a.helo = 10
