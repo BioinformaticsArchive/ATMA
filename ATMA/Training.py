@@ -94,7 +94,6 @@ class GapDetection():
         self.Features= numpy.array(self.Features, dtype=numpy.float32)
 
     def _runLabelTool(self):
-
         # training examples at once
         N=9
 
@@ -155,9 +154,7 @@ class GapDetection():
                     str(float(P))+';'+\
                     '\n')
 
-
     def GetExamples(self):
-
         s = self.pred_volume.shape
         M = 24
 
@@ -172,6 +169,7 @@ class GapDetection():
             print x0,x1,y0,y1,z0,z1
             print self.pred_volume.shape
             tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
+            tmp_volume_raw = self.raw[x0:x1,y0:y1,z0:z1]
 
             for i in numpy.arange(4,13,2):
                 V.append(rayFeatures(tmp_volume[:,:,:,0],i))
@@ -197,28 +195,4 @@ class GapDetection():
 
         self.i+=1
 
-        return f,tmp_volume[:,:,:,0]
-
-        #   self.Features contains all Features 
-        #   self.Label contains all labels and cann be updated by 
-        #self._calcFeatureList()
-
-    #def run(self):
-        #   _runLabelTool
-
-        #at startup
-
-        #with a click, the labeltool should start
-        #after labeling train the classifire
-        #self._runLabelTool()
-        #self._runTraining()
-
-        #run labeltool again on other nodes and see predictions
-        #or stop labeling and run prediction on all gaps
-        #self._saveResults()
-        
-
-
-
-
-
+        return f,tmp_volume_raw

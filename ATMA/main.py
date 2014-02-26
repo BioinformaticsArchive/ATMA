@@ -23,42 +23,46 @@ class ATMA_GUI(QtGui.QWidget):
         self.grid = QtGui.QGridLayout()
 
         #Buttons
-        self._button(0, self._openFile, "Open File")
+        self._text(0, "File Import / Export")
+        self._button3(1, self._openFileR, "Raw",self._openFileP, "Pre",self._openFileO, "Out")
+        self.labRaw= self._label(2, self._none, "Raw Data" , "Path to hdf5 file")
+        self.labPre= self._label(3, self._none, "Prediction" , "Path to hdf5 file")
+        self.labOut= self._label(4, self._none, "Output" , "Path to hdf5 file")
 
-        self.labPath  = self._label(1, self._none, "Path" , "Path")
-        self.labRange = self._label(2, self._set_range, "Range" , "[x0,x1,y0,y1,z0,z1]")
-        self._button(3, self._viewPrediction, "View Prediction")
+        self._text(6, "Set Sub-Volume")
+        self.labRange = self._label(7, self._set_range, "Range" , "[x0,x1,y0,y1,z0,z1]")
+        self._button(8, self._viewPrediction, "View Sub Volume")
 
-        self._text(5, "Tracing")
-        self._label(6, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
-        self._label(7, self._set_thresMembra, "Thrasholding" , "Level [float]")
-        self._label(8, self._set_thresMembra, "Closing" , "Pixel [intager]")
-        self._label(9, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
-        self._label(10, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
+        self._text(15, "Tracing")
+        self._label(16, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
+        self._label(17, self._set_thresMembra, "Thrasholding" , "Level [float]")
+        #self._label(18, self._set_thresMembra, "Closing" , "Pixel [intager]")
+        #self._label(19, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
+        #self._label(20, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
 
-        self._button(11, self._runGapClosing, "Preview")
+        self._button(21, self._runGapClosing, "Preview")
         
         
         self.NDInit=0
         self.NodeClas= QtGui.QPushButton(self)
         self.NodeClas.setText("Train Node Classifier")
         self.NodeClas.clicked.connect(self.runNodeDetection)
-        self.grid.addWidget(self.NodeClas, 12, 0,1,3)
+        self.grid.addWidget(self.NodeClas, 22, 0,1,3)
 
         self.NodeClasTrue= QtGui.QPushButton(self)
         self.NodeClasTrue.setText("True")
         self.NodeClasTrue.clicked.connect(self.clickTRUE)
-        self.grid.addWidget(self.NodeClasTrue, 26, 3,1,5)
+        self.grid.addWidget(self.NodeClasTrue, 24, 3,1,5)
         
         self.NodeClasFalse= QtGui.QPushButton(self)
         self.NodeClasFalse.setText("False")
         self.NodeClasFalse.clicked.connect(self.clickFALSE)
-        self.grid.addWidget(self.NodeClasFalse, 26, 8,1,5)
+        self.grid.addWidget(self.NodeClasFalse, 24, 8,1,5)
 
 
 
-        self._button3(20, self.test, "Preview",self.test, "Training",self.test, "Done")
-        self._button(23, self._viewResults, "View Results" )
+        self._button3(23, self.test, "Preview",self.test, "Clear",self.test, "Run")
+        self._button(24, self._viewResults, "View Results" )
 
         #Maya Widget
         self.M = MayaviQWidget()
@@ -72,12 +76,12 @@ class ATMA_GUI(QtGui.QWidget):
 
        
     def runNodeDetection(self):
-
         self.Labels=[]
         self.Features=[]
         self.ND = Training.GapDetection()
         self.ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
-        self.ND.pred_volume = h5py.File(self.path_in[0])[self.path_in[1]]
+        self.ND.raw= self.RawData
+        self.ND.pred_volume = self.PredData
         self.ND.Range= self.Range
         self.ND.calcGapList()
 
@@ -127,8 +131,6 @@ class ATMA_GUI(QtGui.QWidget):
 
 
     #Widgets
-
-
     def _button(self,x,func,title):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
@@ -195,21 +197,31 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _none(self,text):pass
 
-    def _openFile(self):
-
+    def _openFileP(self):
         self.path_in = ['', '']
         self.path_in[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
         self.path_in[1] = 'volume/data'
-        print self.path_in
         #self.path_in = ['./data/vagus001.h5',"volume/data"]
-        self.FullData = h5py.File(self.path_in[0])[self.path_in[1]]
-        self.labPath.setText(self.path_in[0])
+        self.PredData=h5py.File(self.path_in[0])[self.path_in[1]]
+        self.labPre.setText(self.path_in[0])
 
-
-        #set initaial range of full volume
-        X,Y,Z,c = self.FullData.shape
+        #set initial range of full volume
+        X,Y,Z,c = self.PredData.shape
         self.RANGE=[0,X,0,Y,0,Z]
         self.labRange.setText(str(self.RANGE))
+
+    def _openFileR(self):
+        self.path_raw= ['', '']
+        self.path_raw[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        self.path_raw[1] = 'volume/data'
+        self.RawData=h5py.File(self.path_raw[0])[self.path_raw[1]]
+        self.labRaw.setText(self.path_raw[0])
+    
+    def _openFileO(self):
+        self.path_out = ['', '']
+        self.path_out[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
+        self.path_out[1] = 'volume/data'
+        self.labOut.setText(self.path_Out[0])
 
     def _set_range(self,text):
         L=re.findall('\d+', text)
@@ -229,10 +241,9 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _viewPrediction(self):
         L=self.Range
-        self.data=self.FullData[L[0]:L[1],L[2]:L[3],L[4]:L[5],0]
-
+        data=self.RawData[L[0]:L[1],L[2]:L[3],L[4]:L[5]]
         self._clear()
-        GUI.DataVisualizer.rawSlider( self.data )
+        GUI.DataVisualizer.rawSlider( data )
 
     def _viewResults(self):
         GUI.DataVisualizer.segmentation( self.res )
