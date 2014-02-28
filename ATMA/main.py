@@ -266,8 +266,7 @@ class ATMA_GUI(QtGui.QWidget):
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
 
-        self.M.visualization.clear()
-        GUI.DataVisualizer.rawSlider( data )
+        self._viewPrediction() 
         GUI.DataVisualizer.segmentation( self.res )
 
     def _runFull(self):

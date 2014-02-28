@@ -9,7 +9,7 @@ def main():
     ex = ATMA_GUI()
     app.exec_()
 
-def test_simple():
+def demo():
     
     app = PyQt4.QtGui.QApplication.instance()
     ex = ATMA_GUI()
@@ -31,4 +31,4 @@ def test_simple():
 if __name__ == '__main__':
 
     main()
-    #test_simple()
+    #demo()
