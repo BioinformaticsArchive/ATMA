@@ -12,8 +12,6 @@ import numpy
 
 
 class ATMA_GUI(QtGui.QWidget):
-    path_out = ["/tmp/vagus000fff.h5","data"]
-    path_in = ['./data/vagus001.h5','volume/data']
 
     def __init__(self):
         super(ATMA_GUI,self).__init__()
@@ -40,14 +38,14 @@ class ATMA_GUI(QtGui.QWidget):
         #self._label(19, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
         #self._label(20, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
 
-        self._button(21, self._runGapClosing, "Preview")
+        self._button(20, self._runGapClosing, "Preview")
         
         
         self.NDInit=0
         self.NodeClas= QtGui.QPushButton(self)
         self.NodeClas.setText("Train Node Classifier")
         self.NodeClas.clicked.connect(self.runNodeDetection)
-        self.grid.addWidget(self.NodeClas, 22, 0,1,3)
+        self.grid.addWidget(self.NodeClas, 21, 0,1,3)
 
         self.NodeClasTrue= QtGui.QPushButton(self)
         self.NodeClasTrue.setText("True")
@@ -61,8 +59,9 @@ class ATMA_GUI(QtGui.QWidget):
 
 
 
-        self._button3(23, self.test, "Preview",self.test, "Clear",self.test, "Run")
-        self._button(24, self._viewResults, "View Results" )
+        self._button3(22, self.test, "Preview",self.test, "Clear",self.test, "Run")
+        self._button(23, self._viewResults, "View Results" )
+        self._button(24, self._runFull, "Run Batch Processing")
 
         #Maya Widget
         self.M = MayaviQWidget()
@@ -74,7 +73,6 @@ class ATMA_GUI(QtGui.QWidget):
         self.setWindowTitle('ATMA')
         self.show()
 
-       
     def runNodeDetection(self):
         self.Labels=[]
         self.Features=[]
@@ -90,9 +88,8 @@ class ATMA_GUI(QtGui.QWidget):
         self.M.visualization.clear()
         GUI.DataVisualizer.rawSlider( volume )
 
-
     def clickTRUE(self):
-        self.Labels.append([1])
+        self.Labels.append([0])
         self.Features.append(self.f)
         self.f,volume = self.ND.GetExamples()
 
@@ -105,14 +102,13 @@ class ATMA_GUI(QtGui.QWidget):
         Feat = numpy.array(self.Features, dtype=numpy.float32)
         Lab = numpy.array(self.Labels, dtype=numpy.uint32)
         r.learnRF(Feat, Lab)
-        pred=r.predictProbabilities(Feat)
+        f = numpy.array([self.f], dtype=numpy.float32)
+        pred=r.predictProbabilities(f)
         print pred
-        print Lab
-
-
+        #print Lab
 
     def clickFALSE(self):
-        self.Labels.append([0])
+        self.Labels.append([1])
         self.Features.append(self.f)
         self.f,volume = self.ND.GetExamples()
 
@@ -125,9 +121,10 @@ class ATMA_GUI(QtGui.QWidget):
         Feat= numpy.array(self.Features, dtype=numpy.float32)
         Lab= numpy.array(self.Labels, dtype=numpy.uint32)
         r.learnRF(Feat, Lab)
-        pred=r.predictProbabilities(Feat)
+        f = numpy.array([self.f], dtype=numpy.float32)
+        pred=r.predictProbabilities(f)
         print pred
-        print Lab
+        #print Lab
 
 
     #Widgets
@@ -258,12 +255,25 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _runGapClosing(self):
         x0,x1,y0,y1,z0,z1=self.Range
-        print x0
 
         a=CLT()
         a.path_in= self.path_in
         a.path_out = self.path_out
         a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
+        a.blockSize = [200,200,200]
+        a.helo = 30
+        a.sigmaSmooth = self.sigmaSmooth
+        a.thresMembra = self.thresMembra
+        a.sizeFilter = [20,1000]
+        a.verbose = 1
+        a.run()
+        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
+
+    def _runFull(self):
+
+        a=CLT()
+        a.path_in= self.path_in
+        a.path_out = self.path_out
         a.blockSize = [200,200,200]
         a.helo = 30
         a.sigmaSmooth = self.sigmaSmooth
