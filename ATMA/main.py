@@ -22,28 +22,28 @@ class ATMA_GUI(QtGui.QWidget):
 
         #Buttons
         self._text(0, "File Import / Export")
-        self._button3(1, self._openFileR, "Raw",self._openFileP, "Pre",self._openFileO, "Out")
+        self._button2(1, self._openFileR, "Raw",self._openFileP, "Pre")
         self.labRaw= self._label(2, self._none, "Raw Data" , "Path to hdf5 file")
         self.labPre= self._label(3, self._none, "Prediction" , "Path to hdf5 file")
-        self.labOut= self._label(4, self._none, "Output" , "Path to hdf5 file")
+        self.labOut= self._label(4, self._set_pathOut, "Output" , "Path to hdf5 file")
 
         self._text(6, "Set Sub-Volume")
         self.labRange = self._label(7, self._set_range, "Range" , "[x0,x1,y0,y1,z0,z1]")
         self._button(8, self._viewPrediction, "View Sub Volume")
 
-        self._text(15, "Tracing")
-        self._label(16, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
-        self._label(17, self._set_thresMembra, "Thrasholding" , "Level [float]")
-        #self._label(18, self._set_thresMembra, "Closing" , "Pixel [intager]")
-        #self._label(19, self._set_sigmaSmooth, "Max. Distance" , "Pixel [intager]")
-        #self._label(20, self._set_sigmaSmooth, "Min. Distance" , "Pixel [intager]")
-
-        self._button(20, self._runGapClosing, "Preview")
+        self._text(11, "Classification")
+        self._label(12, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
+        self._label(13, self._set_thresMembra, "Thresholding" , "Level [float]")
+        self._label(14, self._none, "Closing" , "Pixel [integer]")
+        self._label(15, self._none, "Max. Distance" , "Pixel [integer]")
+        self._label(16, self._none, "Min. Distance" , "Pixel [integer]")
+        self._button(17, self._runGapClosing, "Run Axon Classification")
         
         
+        self._text(20, "Node of Ranvier Detection")
         self.NDInit=0
         self.NodeClas= QtGui.QPushButton(self)
-        self.NodeClas.setText("Train Node Classifier")
+        self.NodeClas.setText("Train Classifier")
         self.NodeClas.clicked.connect(self.runNodeDetection)
         self.grid.addWidget(self.NodeClas, 21, 0,1,3)
 
@@ -59,8 +59,7 @@ class ATMA_GUI(QtGui.QWidget):
 
 
 
-        self._button3(22, self.test, "Preview",self.test, "Clear",self.test, "Run")
-        self._button(23, self._viewResults, "View Results" )
+        #self._button(23, self._viewResults, "View Results" )
         self._button(24, self._runFull, "Run Batch Processing")
 
         #Maya Widget
@@ -194,6 +193,9 @@ class ATMA_GUI(QtGui.QWidget):
 
     def _none(self,text):pass
 
+    def _set_pathOut(self,text):
+        self.path_out=[text,'data']
+
     def _openFileP(self):
         self.path_in = ['', '']
         self.path_in[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
@@ -214,11 +216,6 @@ class ATMA_GUI(QtGui.QWidget):
         self.RawData=h5py.File(self.path_raw[0])[self.path_raw[1]]
         self.labRaw.setText(self.path_raw[0])
     
-    def _openFileO(self):
-        self.path_out = ['', '']
-        self.path_out[0] = QtGui.QFileDialog.getOpenFileName(self, 'Open file','/home/')
-        self.path_out[1] = 'volume/data'
-        self.labOut.setText(self.path_Out[0])
 
     def _set_range(self,text):
         L=re.findall('\d+', text)
@@ -268,6 +265,10 @@ class ATMA_GUI(QtGui.QWidget):
         a.verbose = 1
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
+
+        self.M.visualization.clear()
+        GUI.DataVisualizer.rawSlider( data )
+        GUI.DataVisualizer.segmentation( self.res )
 
     def _runFull(self):
 

@@ -30,5 +30,5 @@ def test_simple():
 
 if __name__ == '__main__':
 
-    #main()
-    test_simple()
+    main()
+    #test_simple()
