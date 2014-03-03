@@ -36,16 +36,7 @@ def rawSlider(rawData):
             cut_plane.implicit_plane.origin = o
             cut_plane.implicit_plane.widget.enabled = True
 
-def points(x,y,z):
-    x=[x]
-    y=[y]
-    z=[z]
-    s=[1]
-    #x 
-    #dd= sin(2 * t)*100
-    #y = cos(t)*100
-    #z = cos(2 * t)*50
-    #s = 2 + sin(t)
+def points(x,y,z,s):
     mlab.points3d(x, y, z, s, 
             transparent=True,
             opacity=0.2,

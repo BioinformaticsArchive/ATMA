@@ -89,22 +89,25 @@ class ATMA_GUI(QtGui.QWidget):
 
     def zoom(self):
         self.NDInit+=1
+        self._clear()
+
         if self.NDInit%2!=0:
-            self.f,volume = self.ND.GetCurrentExample()
-            self.M.visualization.clear()
-            x,y,z=volume.shape
-            GUI.DataVisualizer.rawSlider( volume )
-            GUI.DataVisualizer.points( x/2, y/2, z/2 )
+            self.f,data= self.ND.GetCurrentExample()
+            x,y,z=numpy.array(data.shape)/2
+            GUI.DataVisualizer.points( [x], [y], [z], [1])
         else:
             L=self.Range
             data=self.RawData[L[0]:L[1],L[2]:L[3],L[4]:L[5]]
-            self._clear()
-            self.f,volume = self.ND.GetCurrentExample()
             g=self.ND.gapL
-            x,y,z = g[self.ND.i]
-            print x,y,z
-            GUI.DataVisualizer.rawSlider( data )
-            GUI.DataVisualizer.points( x, y, z )
+            X,Y,Z,S=[],[],[],[]
+            for x,y,z in g:
+                X.append(x)
+                Y.append(y)
+                Z.append(z)
+                S.append(1)
+            GUI.DataVisualizer.points( X, Y, Z, S)
+
+        GUI.DataVisualizer.rawSlider( data )
 
 
 
