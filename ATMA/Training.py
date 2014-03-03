@@ -17,7 +17,7 @@ class GapDetection():
     gaps = None
     pred_volume = None # prediction volume data
     pred_node = None # prediction for node of ranvier 
-    i=0     # id of current example
+    i=-1     # id of current example
     
 
     def __init__(self):pass
@@ -154,10 +154,20 @@ class GapDetection():
                     str(float(P))+';'+\
                     '\n')
 
-    def GetExamples(self):
+    def GetCurrentExample(self):
         s = self.pred_volume.shape
         M = 24
+        self.i+=0
+        return self._GetExamples(s,M)
 
+    def GetNextExample(self):
+        s = self.pred_volume.shape
+        M = 24
+        self.i+=1
+        return self._GetExamples(s,M)
+
+
+    def _GetExamples(self,s,M):
         if self.i<len(self.gapL):
             g=self.gapL[self.i]
             V,f = [],[]
@@ -191,6 +201,5 @@ class GapDetection():
         else:
             return 0,0
 
-        self.i+=1
 
         return f,tmp_volume_raw

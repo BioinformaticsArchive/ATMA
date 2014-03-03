@@ -25,8 +25,7 @@ def demo():
     ex.sigmaSmooth=0.7
     ex.thresMembra=0.4
     ex._viewPrediction()
-    #ex._runGapClosing()
-    #ex._viewResults()
+    ex._runGapClosing()
     app.exec_()
 
 
