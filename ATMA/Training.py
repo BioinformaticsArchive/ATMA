@@ -166,8 +166,6 @@ class GapDetection():
             y0, y1 = max(0,y-M), min(s[1],y+M)
             z0, z1 = max(0,z-M), min(s[2],z+M)
 
-            print x0,x1,y0,y1,z0,z1
-            print self.pred_volume.shape
             tmp_volume = self.pred_volume[x0:x1,y0:y1,z0:z1,:]
             tmp_volume_raw = self.raw[x0:x1,y0:y1,z0:z1]
 
