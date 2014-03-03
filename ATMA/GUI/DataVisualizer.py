@@ -5,11 +5,13 @@ from ColorTable import *
 
 def segmentation(binData):
 
-    binData=binData%len(ColorTable)
+    #binData=binData%len(ColorTable)
+    #faster but less colors
+    binData = (binData!=0) + (binData%5)
     Components = numpy.unique(binData)
     l = len(Components)
     for i,c in enumerate(Components):
-        print i,'/',len(Components)
+        print i+1,'/',len(Components)
         if c==0:continue
 
         col=int(c%len(ColorTable))
