@@ -21,33 +21,28 @@ class ATMA_GUI(QtGui.QWidget):
         self.grid = QtGui.QGridLayout()
 
         #Buttons
-        self._text(0, "File Import / Export")
+        self._text(0, "Import / Export")
         self._button2(1, self._openFileR, "Raw",self._openFileP, "Pre")
         self.labRaw= self._label(2, self._none, "Raw Data" , "Path to hdf5 file")
         self.labPre= self._label(3, self._none, "Prediction" , "Path to hdf5 file")
         self.labOut= self._label(4, self._set_pathOut, "Output" , "Path to hdf5 file")
 
-        self._text(6, "Set Sub-Volume")
+        self._text(6, "Select Range")
         self.labRange = self._label(7, self._set_range, "Range" , "[x0,x1,y0,y1,z0,z1]")
         self._button(8, self._viewPrediction, "View Sub Volume")
 
-        self._text(11, "Classification")
-        self._label(12, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
-        self._label(13, self._set_thresMembra, "Thresholding" , "Level [float]")
-        self._label(14, self._none, "Closing" , "Pixel [integer]")
-        self._label(15, self._none, "Max. Distance" , "Pixel [integer]")
-        self._label(16, self._none, "Min. Distance" , "Pixel [integer]")
-        self._button(17, self._runGapClosing, "Run Axon Classification")
+        self._text(10, "Axon Classification")
+        self._label(11, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
+        self._label(12, self._set_thresMembra, "Thresholding" , "Level [float]")
+        self._label(13, self._none, "Closing" , "Pixel [integer]")
+        self._label(14, self._none, "Max. Distance" , "Pixel [integer]")
+        self._label(15, self._none, "Min. Distance" , "Pixel [integer]")
+        self._button2(16, self._runGapClosing, "Run Axon Classification",self._viewResults,"View Results")
         
         
-        self._text(20, "Node of Ranvier Detection")
-        self.NDInit=0
-        #self.NodeClas= QtGui.QPushButton(self)
-        #self.NodeClas.setText("Train Classifier")
-        #self.NodeClas.clicked.connect(self.runNodeDetection)
-        #self.grid.addWidget(self.NodeClas, 21, 0,1,3)
-        self._button(21,self.runNodeDetection, "Train Classifier")
-        self._button2(22, self._viewGaps, "View Gaps",self.zoom, "Zoom In/Out")
+        self._text(19, "Node of Ranvier Detection")
+        self._button(20,self.runNodeDetection, "Train Classifier")
+        self._button2(21, self._viewGaps, "View Gaps",self.zoom, "Zoom In/Out")
 
         self.NodeClasTrue= QtGui.QPushButton(self)
         self.NodeClasTrue.setText("True")
@@ -61,8 +56,8 @@ class ATMA_GUI(QtGui.QWidget):
 
 
 
-        #self._button(23, self._viewResults, "View Results" )
-        self._button(24, self._runFull, "Run Batch Processing")
+        self._text(23, "Batch Processing")
+        self._button(24, self._runFull, "-- Run --")
 
         #Maya Widget
         self.M = MayaviQWidget()
@@ -75,7 +70,8 @@ class ATMA_GUI(QtGui.QWidget):
         self.show()
 
     def runNodeDetection(self):
-        self.NDInit=0
+        self.CurrentNode=0
+        self.view=0
         self.Labels=[]
         self.Features=[]
         self.ND = Training.GapDetection()
@@ -84,32 +80,54 @@ class ATMA_GUI(QtGui.QWidget):
         self.ND.pred_volume = self.PredData
         self.ND.Range = self.Range
         self.ND.calcGapList()
+        g=self.ND.gapL
+        self.gapARRAY=[]
+
+        # Do doV
+        # multiple classes
+        # 1: Done       (yellow,orange) To test only, later disappear
+        # 2: Current    (blue)
+        # 3: prediction (green, red)
+        i=0
+        for x,y,z in g:
+            #gapArray: [x,y,z, label]
+            self.gapARRAY.append([x,y,z,-1,i])
+            i+=1
         self.zoom()
 
-
     def zoom(self):
-        self.NDInit+=1
+        self.view+=1
         self._clear()
 
-        if self.NDInit%2!=0:
+        if self.view%2!=0:
+            #Show zoom in, subset with single gap
             self.f,data= self.ND.GetCurrentExample()
             x,y,z=numpy.array(data.shape)/2
             GUI.DataVisualizer.points( [x], [y], [z], [1])
+
         else:
+            #show zoom out: full dataset with all gaps
             L=self.Range
             data=self.RawData[L[0]:L[1],L[2]:L[3],L[4]:L[5]]
-            g=self.ND.gapL
+
+            # Do do:
+            # multiple classes
+            # 1: Done       (yellow,orange) To test only, later disappear
+            # 2: Current    (blue)
+            # 3: prediction (green, red)
             X,Y,Z,S=[],[],[],[]
-            for x,y,z in g:
+            for x,y,z,l,i in self.gapARRAY:
+                #BUG! current!= current node
+                if i==self.CurrentNode:
+                    S.append(1)
+                else:
+                    S.append(1)
                 X.append(x)
                 Y.append(y)
                 Z.append(z)
-                S.append(1)
             GUI.DataVisualizer.points( X, Y, Z, S)
 
         GUI.DataVisualizer.rawSlider( data )
-
-
 
     def clickTRUE(self):
         self.Labels.append([0])
@@ -117,7 +135,8 @@ class ATMA_GUI(QtGui.QWidget):
         self.f,volume = self.ND.GetNextExample()
 
         self.M.visualization.clear()
-        self.NDInit+=1
+        self.CurrentNode+=1
+        self.view+=1
         self.zoom()
 
         r = vigra.learning.RandomForest()
@@ -127,7 +146,6 @@ class ATMA_GUI(QtGui.QWidget):
         f = numpy.array([self.f], dtype=numpy.float32)
         pred=r.predictProbabilities(f)
         print pred
-        #print Lab
 
     def clickFALSE(self):
         self.Labels.append([1])
@@ -135,7 +153,8 @@ class ATMA_GUI(QtGui.QWidget):
         self.f,volume = self.ND.GetNextExample()
 
         self.M.visualization.clear()
-        self.NDInit+=1
+        self.CurrentNode+=1
+        self.view+=1
         self.zoom()
         
         r = vigra.learning.RandomForest()
@@ -145,7 +164,7 @@ class ATMA_GUI(QtGui.QWidget):
         f = numpy.array([self.f], dtype=numpy.float32)
         pred=r.predictProbabilities(f)
         print pred
-        #print Lab
+
 
 
     #Widgets
@@ -212,7 +231,6 @@ class ATMA_GUI(QtGui.QWidget):
 
 
     #Functions
-
     def _none(self,text):pass
 
     def _set_pathOut(self,text):
@@ -237,7 +255,6 @@ class ATMA_GUI(QtGui.QWidget):
         self.path_raw[1] = 'volume/data'
         self.RawData=h5py.File(self.path_raw[0])[self.path_raw[1]]
         self.labRaw.setText(self.path_raw[0])
-    
 
     def _set_range(self,text):
         L=re.findall('\d+', text)
@@ -290,12 +307,9 @@ class ATMA_GUI(QtGui.QWidget):
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
 
-        #self._viewPrediction() 
-        #GUI.DataVisualizer.segmentation( self.res )
 
 
     def _runFull(self):
-
         a=CLT()
         a.path_in= self.path_in
         a.path_out = self.path_out
