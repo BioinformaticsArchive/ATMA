@@ -20,12 +20,13 @@ The GUI version can be executed by running the script
 1. Select SubVolume
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/01viewer.png?raw=true)
 
-2. Apply Axon Classification 
+2. Apply Axon Classification
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/02axons.png?raw=true)
 
-3. Train Node Classifier 
+3. Train Node Classifier
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03nodeOfRanvier.png?raw=true)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04myelinatedAxon.png?raw=true)
+4. Process the entire dataset once the parameter for the classification are found (step 2) and the clasifire is trained (step 3).
 
 USAGE (CLT)
 -----------
