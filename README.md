@@ -26,7 +26,7 @@ The GUI version can be executed by running the script
 3. Train Node Classifier
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03nodeOfRanvier.png?raw=true)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04myelinatedAxon.png?raw=true)
-4. Process the entire dataset once the parameter for the classification are found (step 2) and the clasifire is trained (step 3).
+4. The entire dataset can be processed wirh the previously obtained parameters for classification (step 2) and the trained classifier for node of Ranvier detection (step 3).
 
 USAGE (CLT)
 -----------
