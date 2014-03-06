@@ -10,7 +10,6 @@ import re
 import numpy
 
 
-
 class ATMA_GUI(QtGui.QWidget):
 
     def __init__(self):
@@ -69,6 +68,9 @@ class ATMA_GUI(QtGui.QWidget):
         self.setWindowTitle('ATMA')
         self.show()
 
+
+
+    # Core Functions
     def runNodeDetection(self):
         self.CurrentNode=0
         self.view=0
@@ -81,18 +83,13 @@ class ATMA_GUI(QtGui.QWidget):
         self.ND.Range = self.Range
         self.ND.calcGapList()
         g=self.ND.gapL
-        self.gapARRAY=[]
 
-        # Do doV
-        # multiple classes
-        # 1: Done       (yellow,orange) To test only, later disappear
-        # 2: Current    (blue)
-        # 3: prediction (green, red)
-        i=0
-        for x,y,z in g:
-            #gapArray: [x,y,z, label]
-            self.gapARRAY.append([x,y,z,-1,i])
-            i+=1
+        s=self.PredData.shape
+        M=24
+        self.O=self.ND.calcObjectMatrix(s,M)
+
+        self.CurrentObject=0
+        self.view=0
         self.zoom()
 
     def zoom(self):
@@ -101,9 +98,17 @@ class ATMA_GUI(QtGui.QWidget):
 
         if self.view%2!=0:
             #Show zoom in, subset with single gap
-            self.f,data= self.ND.GetCurrentExample()
+            data = self.O[self.CurrentObject]["Data"]
             x,y,z=numpy.array(data.shape)/2
-            GUI.DataVisualizer.points( [x], [y], [z], [1])
+            opac = 0.3
+
+            p=self.O[self.CurrentObject]["Prediction"][0]
+            if len(p)==1:
+                C=[0,0,0]
+            if len(p)==2:
+                C=numpy.array([1,0,0])*p[0]+numpy.array([0,1,0])*p[1]
+
+            GUI.DataVisualizer.points( x, y, z, 1, opac,C)
 
         else:
             #show zoom out: full dataset with all gaps
@@ -115,59 +120,127 @@ class ATMA_GUI(QtGui.QWidget):
             # 1: Done       (yellow,orange) To test only, later disappear
             # 2: Current    (blue)
             # 3: prediction (green, red)
-            X,Y,Z,S=[],[],[],[]
-            for x,y,z,l,i in self.gapARRAY:
-                #BUG! current!= current node
-                if i==self.CurrentNode:
-                    S.append(1)
+            X,Y,Z,S,C=[],[],[],[],[]
+            for o in self.O:
+                x,y,z = o['Position']
+                C=[0,0,0]
+
+
+                # unlabeled candidates have double the size
+                # Labeled are either red or green
+                if o["Label"]==-1:
+                    S=1
+                    opac = 0.3
                 else:
-                    S.append(1)
-                X.append(x)
-                Y.append(y)
-                Z.append(z)
-            GUI.DataVisualizer.points( X, Y, Z, S)
+                    if o["Label"]==1:
+                        C=[0,1,0]
+                    if o["Label"]==0:
+                        C=[1,0,0]
+                    S=0.5
+                    opac = 1
+
+
+                # current object
+                if o==self.O[self.CurrentObject]:
+                    opac = 0.7
+                    S=2
+                else:
+                    p=o["Prediction"][0]
+                    if len(p)==1:
+                        C=[0,0,0]
+                    if len(p)==2:
+                        C=numpy.array([1,0,0])*p[0]+numpy.array([0,1,0])*p[1]
+
+
+                GUI.DataVisualizer.points( x, y, z, S, opac ,C)
 
         GUI.DataVisualizer.rawSlider( data )
 
-    def clickTRUE(self):
-        self.Labels.append([0])
-        self.Features.append(self.f)
-        self.f,volume = self.ND.GetNextExample()
 
-        self.M.visualization.clear()
-        self.CurrentNode+=1
-        self.view+=1
-        self.zoom()
+    def calcProbabilities(self):
+        # Compute Features
+        L,F,=[],[]
+        for o in self.O:
+            l=o["Label"]
+            f=o["Features"]
+            if l != -1:
+                L.append([l])
+                F.append(f)
 
+        # Train RF
         r = vigra.learning.RandomForest()
-        Feat = numpy.array(self.Features, dtype=numpy.float32)
-        Lab = numpy.array(self.Labels, dtype=numpy.uint32)
+        Feat = numpy.array(F, dtype=numpy.float32)
+        Lab = numpy.array(L, dtype=numpy.uint32)
         r.learnRF(Feat, Lab)
-        f = numpy.array([self.f], dtype=numpy.float32)
-        pred=r.predictProbabilities(f)
-        print pred
+
+        
+        # Predict on Data
+        for o in self.O:
+            f=numpy.array([o["Features"]],dtype=numpy.float32)
+            pred=r.predictProbabilities(f)
+            o["Prediction"]=pred
+
+
+
+
+
+    def clickTRUE(self):
+        o=self.O[self.CurrentObject]
+        self.M.visualization.clear()
+        self.view+=1
+
+        o["Label"]=1
+        self.calcProbabilities()
+
+        #Show next
+        self.CurrentObject+=1
+        self.zoom()
 
     def clickFALSE(self):
-        self.Labels.append([1])
-        self.Features.append(self.f)
-        self.f,volume = self.ND.GetNextExample()
-
+        o=self.O[self.CurrentObject]
         self.M.visualization.clear()
-        self.CurrentNode+=1
         self.view+=1
+
+        o["Label"]=0
+        self.calcProbabilities()
+
+        #Show next
+        self.CurrentObject+=1
         self.zoom()
-        
-        r = vigra.learning.RandomForest()
-        Feat= numpy.array(self.Features, dtype=numpy.float32)
-        Lab= numpy.array(self.Labels, dtype=numpy.uint32)
-        r.learnRF(Feat, Lab)
-        f = numpy.array([self.f], dtype=numpy.float32)
-        pred=r.predictProbabilities(f)
-        print pred
+    
+    def _runGapClosing(self):
+        x0,x1,y0,y1,z0,z1=self.Range
+
+        a=CLT()
+        a.path_in= self.path_in
+        a.path_out = self.path_out
+        a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
+        a.blockSize = [200,200,200]
+        a.helo = 30
+        a.sigmaSmooth = self.sigmaSmooth
+        a.thresMembra = self.thresMembra
+        a.sizeFilter = [20,1000]
+        a.verbose = 1
+        a.run()
+        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
+        print "Done"
+
+    def _runFull(self):
+        a=CLT()
+        a.path_in= self.path_in
+        a.path_out = self.path_out
+        a.blockSize = [200,200,200]
+        a.helo = 30
+        a.sigmaSmooth = self.sigmaSmooth
+        a.thresMembra = self.thresMembra
+        a.sizeFilter = [20,1000]
+        a.verbose = 1
+        a.run()
+        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
 
 
 
-    #Widgets
+    # Widgets (ToDo: this should be in an separate class)
     def _button(self,x,func,title):
         b = QtGui.QPushButton(title,self)
         b.clicked.connect(func)
@@ -230,7 +303,8 @@ class ATMA_GUI(QtGui.QWidget):
 
 
 
-    #Functions
+    
+    # Other Functions
     def _none(self,text):pass
 
     def _set_pathOut(self,text):
@@ -291,33 +365,3 @@ class ATMA_GUI(QtGui.QWidget):
     def _demo(self):
         self.M.visualization.update_plot()
 
-    def _runGapClosing(self):
-        x0,x1,y0,y1,z0,z1=self.Range
-
-        a=CLT()
-        a.path_in= self.path_in
-        a.path_out = self.path_out
-        a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
-        a.blockSize = [200,200,200]
-        a.helo = 30
-        a.sigmaSmooth = self.sigmaSmooth
-        a.thresMembra = self.thresMembra
-        a.sizeFilter = [20,1000]
-        a.verbose = 1
-        a.run()
-        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
-
-
-
-    def _runFull(self):
-        a=CLT()
-        a.path_in= self.path_in
-        a.path_out = self.path_out
-        a.blockSize = [200,200,200]
-        a.helo = 30
-        a.sigmaSmooth = self.sigmaSmooth
-        a.thresMembra = self.thresMembra
-        a.sizeFilter = [20,1000]
-        a.verbose = 1
-        a.run()
-        self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]

@@ -151,7 +151,6 @@ class Data2Token():
 
 
 class Token2Data():
-
     def __init__(self,TList,DataShape):
 
         self.data=numpy.zeros(DataShape)

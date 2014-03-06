@@ -11,7 +11,24 @@ def main():
     ex = ATMA_GUI()
     app.exec_()
 
-def demo():
+def develop():
+
+    app = PyQt4.QtGui.QApplication.instance()
+    ex = ATMA_GUI()
+    import h5py
+    ex.path_in = [home+'/data/vagus002PRE.h5','volume/data']
+    ex.PredData=h5py.File(ex.path_in[0])[ex.path_in[1]]
+    ex.path_raw = [home+'/data/vagus002RAW.h5','volume/data']
+    ex.RawData=h5py.File(ex.path_raw[0])[ex.path_raw[1]]
+    ex.path_out = ["/tmp/ttt.h5","data"]
+    ex.Range = [0,200,0,200,0,120]
+    ex.sigmaSmooth=0.7
+    ex.thresMembra=0.7
+    ex._runGapClosing()
+    ex.runNodeDetection()
+    app.exec_()
+
+def demo1():
     
     app = PyQt4.QtGui.QApplication.instance()
     ex = ATMA_GUI()
@@ -31,5 +48,6 @@ def demo():
 
 if __name__ == '__main__':
 
-    main()
+    #main()
     #demo()
+    develop()
