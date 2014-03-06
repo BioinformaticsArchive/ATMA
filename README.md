@@ -24,7 +24,9 @@ The GUI version can be executed by running the script
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/02axons.png?raw=true)
 
 3. Train Node Classifier
+This image shows a node of Ranvier. The myelinated membrane is interupted. (nodes of ranvier are annotated with green)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03nodeOfRanvier.png?raw=true)
+This image shows a false node of Ranver candidate. The myelinated membrane is thick and not interipted. (false node of ranvier candidates are annotated with red)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04myelinatedAxon.png?raw=true)
 4. The entire dataset can be processed wirh the previously obtained parameters for classification (step 2) and the trained classifier for node of Ranvier detection (step 3).
 
