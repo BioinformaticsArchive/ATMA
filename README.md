@@ -2,6 +2,20 @@ ATMA project
 =================
 ATMA (Automated Tracer for Myelinated Axons) is a programm for detailed reconstruction of the geometry of fibers inside a peripheral nerve based on its high resolution serial section images and for the detection of the nodes of Ranvier within this nerve.
 
+Install
+-------
+You can check the latest sources with the command::
+
+    git clone git@github.com:RWalecki/ATMA.git
+
+
+
+USAGE (GUI)
+-----------
+The GUI version can be executed by running the script 
+```bash
+"./run.sh"
+```
 
 1. Select SubVolume
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/01viewer.png?raw=true)
@@ -13,26 +27,9 @@ ATMA (Automated Tracer for Myelinated Axons) is a programm for detailed reconstr
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03nodeOfRanvier.png?raw=true)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04myelinatedAxon.png?raw=true)
 
-
-
-Install
--------
-You can check the latest sources with the command::
-
-    git clone git@github.com:RWalecki/ATMA.git
-
-
-
-USAGE 
------
-
-The GUI version can be executed by running the script 
-
-```bash
-"./run.sh"
-```
-
-ATMA contains several methods for segmentation, tracing and classification. These methods can be run directly in python.
+USAGE (CLT)
+-----------
+ATMA also contains several methods for axon segmentation and axon classification. These methods can be executed directly from python script.
 (Note: do not forget to add ATMA to your PYTHONPATH)
 Here a short example:
 
