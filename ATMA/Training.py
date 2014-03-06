@@ -219,13 +219,13 @@ class GapDetection():
             tmp_volume_raw = self.raw[x0:x1,y0:y1,z0:z1]
 
             tmp_Feature=[]
-            for i in numpy.arange(4,13,2):
-                tmp_Feature.append(rayFeatures(tmp_volume_pre[:,:,:,0],i))
+            #for i in numpy.arange(4,13,2):
+                #tmp_Feature.append(rayFeatures(tmp_volume_pre[:,:,:,0],i))
 
             for i in numpy.arange(0.5,6,0.5):
-                tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,0],i))
+                #tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,0],i))
                 tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,1],i))
-                tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,2],i))
+                #tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,2],i))
 
             
             for v in tmp_Feature:

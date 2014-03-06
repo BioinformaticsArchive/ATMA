@@ -55,6 +55,11 @@ class CLT():
         #Create Volume that contains all gaps
         Gaps = numpy.zeros(seg.shape)
         for g in GList:
+
+            #here pass the gap atributes in a better way
+            #p1 = g.Ep1.Position
+            #p2 = g.Ep2.Position
+            #d = numpy.sum(((p1-p2)**2)**(0.5))
             x,y,z = g.Position
             Gaps[x,y,z]=1
 
