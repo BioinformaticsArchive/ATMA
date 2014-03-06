@@ -2,7 +2,18 @@ ATMA project
 =================
 ATMA (Automated Tracer for Myelinated Axons) is a programm for detailed reconstruction of the geometry of fibers inside a peripheral nerve based on its high resolution serial section images and for the detection of the nodes of Ranvier within this nerve.
 
-![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/screenshot.png?raw=true)
+
+1. Select SubVolume
+![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/01viewer.png?raw=true)
+
+2. Apply Axon Classification 
+![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/02axons.png?raw=true)
+
+3. Train Node Classifier 
+![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03nodeOfRanvier.png?raw=true)
+![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04myelinatedAxon.png?raw=true)
+
+
 
 Install
 -------
