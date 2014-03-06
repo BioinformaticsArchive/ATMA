@@ -67,6 +67,7 @@ REQUIREMENTS (CLT)
 * numpy (tested with 1.7.1)
 * vigra (tested with 1.8.0)
 * h5py (tested with 2.2.0b1)
+* munkres (tested with 1.0.6)
 
 ADDITIONAL REQUIREMENTS (GUI)
 -----------------------------
