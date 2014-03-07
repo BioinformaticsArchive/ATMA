@@ -21,9 +21,9 @@ class ATMA_GUI(QtGui.QWidget):
 
         #Buttons
         self._text(0, "Import / Export")
-        self._button2(1, self._openFileR, "Raw",self._openFileP, "Pre")
+        self._button2(1, self._openFileR, "Load Raw Data",self._openFileP, "Load Prediction Data")
         self.labRaw= self._label(2, self._none, "Raw Data" , "Path to hdf5 file")
-        self.labPre= self._label(3, self._none, "Prediction" , "Path to hdf5 file")
+        self.labPre= self._label(3, self._none, "Prediction Data" , "Path to hdf5 file")
         self.labOut= self._label(4, self._set_pathOut, "Output" , "Path to hdf5 file")
 
         self._text(6, "Select Range")
