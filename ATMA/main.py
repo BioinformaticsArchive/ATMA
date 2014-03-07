@@ -74,19 +74,17 @@ class ATMA_GUI(QtGui.QWidget):
     def runNodeDetection(self):
         self.CurrentNode=0
         self.view=0
-        self.Labels=[]
-        self.Features=[]
-        self.ND = Training.GapDetection()
-        self.ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
-        self.ND.raw = self.RawData
-        self.ND.pred_volume = self.PredData
-        self.ND.Range = self.Range
-        self.ND.calcGapList()
-        g=self.ND.gapL
+        ND = Training.GapDetection()
+        ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
+        ND.raw = self.RawData
+        ND.pred_volume = self.PredData
+        ND.Range = self.Range
+        ND.calcGapList()
+        g = ND.gapL
 
         s=self.PredData.shape
         M=24
-        self.O=self.ND.calcObjectMatrix(s,M)
+        self.O = ND.calcObjectMatrix(s,M)
 
         self.CurrentObject=0
         self.view=0
@@ -95,6 +93,7 @@ class ATMA_GUI(QtGui.QWidget):
     def zoom(self):
         self.view+=1
         self._clear()
+        r=self.Range
 
         if self.view%2!=0:
             #Show zoom in, subset with single gap
@@ -122,7 +121,7 @@ class ATMA_GUI(QtGui.QWidget):
             # 3: prediction (green, red)
             X,Y,Z,S,C=[],[],[],[],[]
             for o in self.O:
-                x,y,z = o['Position']
+                x,y,z = o['Position']-numpy.array([r[0],r[2],r[4]])
                 C=[0,0,0]
 
 
