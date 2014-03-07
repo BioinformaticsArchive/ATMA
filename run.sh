@@ -22,10 +22,14 @@ def develop():
     ex.RawData=h5py.File(ex.path_raw[0])[ex.path_raw[1]]
     ex.path_out = ["/tmp/ttt.h5","data"]
     ex.Range = [0,200,0,200,0,120]
+    ex.Range = [100,200,100,200,60,120]
     ex.sigmaSmooth=0.7
     ex.thresMembra=0.7
     ex._runGapClosing()
     ex.runNodeDetection()
+    ex.clickTRUE()
+    ex.clickFALSE()
+    ex.zoom()
     app.exec_()
 
 def demo1():
