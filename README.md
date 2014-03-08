@@ -4,7 +4,7 @@ ATMA (Automated Tracer for Myelinated Axons) is a programm for detailed reconstr
 
 Install
 -------
-You can check the latest sources with the command::
+You can check out the latest sources with the command::
 
     git clone git@github.com:RWalecki/ATMA.git
 
@@ -12,26 +12,26 @@ You can check the latest sources with the command::
 
 USAGE (GUI)
 -----------
-The GUI version can be executed by running the script 
+Run the GUI version of ATMA:
 ```bash
 "./run.sh"
 ```
 
-1. Select SubVolume
+1. Select Volume
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/01_Prediction.png?raw=true)
 
 2. Apply Axon Classification
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/02_AxonClassification.png?raw=true)
 
 3. Train Node Classifier
-This image shows a node of Ranvier. The myelinated membrane is interupted. (nodes of ranvier are annotated with green)
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03_NodeDetection.png?raw=true)
+This image shows a under segmentation error (left) and a node of Ranvier (right). You can trigger this view by using the "Zoom-in/out" button.
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04_Nodes.png?raw=true)
 4. The entire dataset can be processed wirh the previously obtained parameters for classification (step 2) and the trained classifier for node of Ranvier detection (step 3).
 
 USAGE (CLT)
 -----------
-ATMA also contains several methods for axon segmentation and axon classification. These methods can be executed directly from python script.
+ATMA also contains several methods for axon segmentation and axon classification. These methods can be executed directly in python.
 (Note: do not forget to add ATMA to your PYTHONPATH)
 Here a short example:
 
