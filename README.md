@@ -25,7 +25,7 @@ Run the GUI version of ATMA:
 
 3. Train Node Classifier
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/03_NodeDetection.png?raw=true)
-This image shows a under segmentation error (left) and a node of Ranvier (right). You can trigger this view by using the "Zoom-in/out" button.
+This image shows a node of Ranvier (left) and a gap that is caused by unter segmentation (right). You can trigger this view by using the "Zoom-in/out" button.
 ![ATMA-GUI](https://github.com/RWalecki/ATMA/blob/master/doc/04_Nodes.png?raw=true)
 4. The entire dataset can be processed wirh the previously obtained parameters for classification (step 2) and the trained classifier for node of Ranvier detection (step 3).
 
