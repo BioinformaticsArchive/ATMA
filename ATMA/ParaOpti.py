@@ -3,14 +3,14 @@ from BlockProcess import BlockProcess
 import numpy
 import h5py
 
-class ParaOpti():
+class Score():
 
     data = None
     Margin = 0.1
 
     def __init__(self):pass
 
-    def scoreVagus(self):
+    def scoreTracer(self):
         if self.res.shape==2:
             self.data = h5py.File(self.res[0])[self.res[1]]
         else:
