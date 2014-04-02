@@ -20,12 +20,13 @@ class CLT():
     thresMembra = 0.7
     sizeFilter = [20,1000]
 
+    #Score
+    Margin = 0.1
+
 
     def __init__(self):pass
 
     def _Process(self, data):
-
-        # apply segmentation on prediction data
         a=Segmentation.BioData.Nerve(data[:,:,:,0])
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
@@ -64,10 +65,29 @@ class CLT():
             Gaps[x,y,z]=1
 
         return d.data, Gaps
+
+    def getScore(self, method="linear"):
+
+        if method=="linear":
+
+            Z_0 = 0
+            Z_1 = int(self.Margin * self.res.shape[2])
+            Z_2 = int((1-self.Margin) * self.res.shape[2])
+            Z_3 = int(self.res.shape[2])
+
+            Candidates = numpy.unique(self.res[::2,::2,Z_0:Z_1:2])
+
+            FullyTraced=[0]
+            for z in range(Z_2,Z_3):
+                l=self.res[::2,::2,z]
+                Matches = numpy.intersect1d(Candidates,numpy.unique(l))
+                FullyTraced = numpy.unique(numpy.append(Matches, FullyTraced))
+
+            score = len(FullyTraced) - numpy.sum(FullyTraced==0)
+
+        return score
     
-
     def run(self):
-
         self.predictionData = h5py.File(self.path_in[0])[self.path_in[1]]
 
         B = BlockProcess()
@@ -81,5 +101,3 @@ class CLT():
         B.run()
         self.res = h5py.File(self.path_out[0])[self.path_out[1]+"/axons"]
         self.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
-
-
