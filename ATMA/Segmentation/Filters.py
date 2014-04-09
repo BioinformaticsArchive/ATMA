@@ -17,7 +17,6 @@ def thresholdSegmentation(data,smoothingLevel,thresholdLevel):
 
 
 def invertVolume2D(data,sizeFilter=[2,1000]):
-
     res=numpy.zeros(data.shape)
 
     #invert each layer

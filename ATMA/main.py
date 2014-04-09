@@ -222,7 +222,6 @@ class ATMA_GUI(QtGui.QWidget):
         a.verbose = 1
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
-        print "Done"
 
     def _runFull(self):
         a=CLT()

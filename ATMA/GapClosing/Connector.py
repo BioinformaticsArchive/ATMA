@@ -34,7 +34,6 @@ class GapFinder():
 
 
     def _calcCostMatrix(self):
-
         S1=len(self.EList_1)
         S2=len(self.EList_2)
         self.costMatrix=numpy.zeros((S1,S2))
@@ -47,7 +46,6 @@ class GapFinder():
 
 
     def _costFunction(self,ep1,ep2,method):
-
         # Endpoint Atribute (1)
         x1 = numpy.array(ep1.Position,dtype=numpy.float16)
         o1 = numpy.array(ep1.Orientation,dtype=numpy.float16)
@@ -76,7 +74,6 @@ class GapFinder():
 
 
     def run(self):
-
         self.GList=[]
 
         # compute cost matrix from all endpoints
