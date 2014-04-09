@@ -18,6 +18,7 @@ class CLT():
     #Vagus
     sigmaSmooth = 0.7
     thresMembra = 0.7
+    minSize = 500
     sizeFilter = [20,1000]
 
     #Score
@@ -36,6 +37,7 @@ class CLT():
 
         # compute tokens end endpoints from the segmented data
         b=GapClosing.Tokenizer.Data2Token(seg)
+        b.minSize=self.minSize
         b.run()
         EList = b.EList
         TList = b.TList
@@ -67,7 +69,6 @@ class CLT():
         return d.data, Gaps
 
     def getScore(self, method="linear"):
-
         if method=="linear":
 
             Z_0 = 0
