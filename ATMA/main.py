@@ -12,6 +12,9 @@ import numpy
 
 class ATMA_GUI(QtGui.QWidget):
 
+    blockSize=[200,200,200]
+    helo = 15
+
     def __init__(self):
         super(ATMA_GUI,self).__init__()
         self.initUI()
@@ -76,6 +79,8 @@ class ATMA_GUI(QtGui.QWidget):
         self.view=0
         ND = Training.GapDetection()
         ND.gaps = h5py.File(self.path_out[0])[self.path_out[1]+"/gaps"]
+        print self.path_out
+        ND.attributes= h5py.File(self.path_out[0])[self.path_out[1]+"/attributes"]
         ND.raw = self.RawData
         ND.pred_volume = self.PredData
         ND.Range = self.Range
@@ -214,8 +219,8 @@ class ATMA_GUI(QtGui.QWidget):
         a.path_in= self.path_in
         a.path_out = self.path_out
         a.Sub_Volume = [[x0,x1],[y0,y1],[z0,z1]] 
-        a.blockSize = [200,200,200]
-        a.helo = 20
+        a.blockSize = self.blockSize
+        a.helo = self.helo
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = [20,1000]

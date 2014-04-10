@@ -6,7 +6,7 @@ import h5py
 def func(data):
     res = data[:,:,:,0]>0.5
     gaps = numpy.zeros(res.shape)
-    return res, gaps
+    return res, gaps, [numpy.zeros((14))]
 
 class testcase:
 

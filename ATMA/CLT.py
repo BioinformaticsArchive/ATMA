@@ -57,16 +57,28 @@ class CLT():
 
         #Create Volume that contains all gaps
         Gaps = numpy.zeros(seg.shape)
+        GapList = []
         for g in GList:
 
             #here pass the gap atributes in a better way
-            #p1 = g.Ep1.Position
-            #p2 = g.Ep2.Position
+            xp1,yp1,zp1 = g.Ep1.Position
+            xp2,yp2,zp2 = g.Ep2.Position
+            xo1,yo1,zo1 = g.Ep1.Orientation
+            xo2,yo2,zo2 = g.Ep2.Orientation
+            t1 = g.Ep1.Thickness
+            t2 = g.Ep2.Thickness
             #d = numpy.sum(((p1-p2)**2)**(0.5))
             x,y,z = g.Position
             Gaps[x,y,z]=1
+            Attributes=[
+            xp1,yp1,zp1,\
+            xp2,yp2,zp2,\
+            xo1,yo1,zo1,\
+            xo2,yo2,zo2,\
+            t1,t2]
+            GapList.append(Attributes)
 
-        return d.data, Gaps
+        return d.data, Gaps, GapList
 
     def getScore(self, method="linear"):
         if method=="linear":

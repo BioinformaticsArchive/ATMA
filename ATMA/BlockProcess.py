@@ -10,6 +10,14 @@ from GapClosing.DataStructures import UnionFinder as UF
 from multiprocessing import Process, Lock
 import multiprocessing
 
+def extendH5py(path,set,data):
+    f=h5py.File(path)
+    d=f[set]
+    s0=d.shape[0]
+    s1=data.shape[0]
+    d.resize(s0+s1,axis=0)
+    d[s0:s0+s1,:]=data
+    f.close()
 
 
 class BlockProcess():
@@ -112,7 +120,20 @@ class BlockProcess():
         where i is the block number of the full dataset 
         and c the component number of the component in the subblock.
         '''
-        res, gaps = self.Process(data)
+        res, gaps, GapList = self.Process(data)
+        for g in GapList:
+            x0,y0,z0=R[0],R[2],R[4]
+            g[0]+=x0
+            g[3]+=x0
+            g[1]+=y0
+            g[4]+=y0
+            g[2]+=z0
+            g[5]+=z0
+            print np.uint16(g)
+            print x0,y0,z0
+           
+        Attributes=np.array(GapList)
+
 
         #Prozess Sub-block
         tmp_res  =  np.array(res,dtype=np.uint32)
@@ -128,6 +149,9 @@ class BlockProcess():
         outF.create_dataset(str(i), data=tmp_res)
         out=outF[self.path_out[1]+"/axons"]
         out_gaps=outF[self.path_out[1]+"/gaps"]
+        #out_attributes=outF[self.path_out[1]+"/attributes"]
+        if len(Attributes)!=0:
+            extendH5py(self.path_out[0],self.path_out[1]+'/attributes',Attributes)
         #import numpy
         #print numpy.sum(gaps)
 
@@ -227,6 +251,8 @@ class BlockProcess():
         outF = h5py.File(self.path_out[0], "w")
         outF.create_dataset(self.path_out[1]+"/axons", (S0,S1,S2), dtype=np.uint32)
         outF.create_dataset(self.path_out[1]+"/gaps", (S0,S1,S2), dtype=np.uint8)
+        a0=np.zeros((1,14))
+        outF.create_dataset(self.path_out[1]+"/attributes", data=a0,dtype=float, maxshape=(None,14))
         outF.close()
 
 

@@ -39,22 +39,30 @@ class GapDetection():
         
         self.gapL=[]
         self.Labels=[]
-        for z in range(self.gaps.shape[2]):
-            pos=numpy.argwhere(self.gaps[:,:,z])
-            if len(pos)!=0:
-                for p in pos:
-                    [x,y] = p
-                    self.gapL.append([x+x0,y+y0,z+z0])
+        self.SpecialFeatures=[]
+        for p in self.attributes:
+            if numpy.all(p[0:6]==0):continue
+            x = int((p[0]+p[3])/2)
+            y = int((p[1]+p[4])/2)
+            z = int((p[2]+p[5])/2)
+            self.gapL.append([x+x0,y+y0,z+z0])
+            self.Labels.append(-1)
+            self.SpecialFeatures.append(p)
 
-                    # -1 means not labeled yet
-                    self.Labels.append(-1)
+            print x,y,z
+
         self.Labels = numpy.array(self.Labels)
     
     def calcObjectMatrix(self,s,M):
 
         #Features, Labels, Data
         O=[]
-        for x,y,z in self.gapL:
+        print len(self.gapL)
+        print len(self.Labels)
+        print len(self.SpecialFeatures)
+        for i in range(len(self.gapL)):
+            x,y,z=self.gapL[i]
+            f=self.SpecialFeatures[i]
             o={}
             F=[]
 
@@ -67,9 +75,41 @@ class GapDetection():
             tmp_volume_raw = self.raw[x0:x1,y0:y1,z0:z1]
 
             tmp_Feature=[]
+            [xp1,yp1,zp1,\
+            xp2,yp2,zp2,\
+            xo1,yo1,zo1,\
+            xo2,yo2,zo2,\
+            t1,t2]=f
+        
+            # Endpoint Atribute (1)
+            x1 = numpy.array([xp1,yp1,zp1])
+            o1 = numpy.array([xo1,yo1,zo1])
+            t1 = numpy.float16(t1)
+
+            # Endpoint Atribute (2)
+            x2 = numpy.array([xp2,yp2,zp2])
+            o2 = numpy.array([xo2,yo2,zo2])
+            t2 = numpy.float16(t2)
+
+
+            # Pair Features
+            c = (x1+x2)/2                           # centre
+            d = numpy.linalg.norm(x1-x2)            # distance
+            if numpy.all((x1-c)==0): print x1,x2,c,d
+            k1= (x1-c) / numpy.linalg.norm(x1-c)    # vector pointing to center (1)
+            k2= (x2-c) / numpy.linalg.norm(x2-c)    # vector pointing to center (2)
+
+            # Meassure if orientation of endpoints is alligned [0: <- -> , 1: -> <-]
+            A=1-(2+numpy.dot(k1,o1)+numpy.dot(k2,o2))/4   #[0,1]
+
+
+
             #for i in numpy.arange(4,13,2):
                 #tmp_Feature.append(rayFeatures(tmp_volume_pre[:,:,:,0],i))
-
+            F.append(d)
+            F.append(t1/t2)
+            F.append(t1+t2)
+            F.append(A)
             for i in numpy.arange(0.5,6,0.5):
                 #tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,0],i))
                 tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,1],i))
@@ -92,6 +132,7 @@ class GapDetection():
             o['Data']=tmp_volume_raw
 
             O.append(o)
+        O.reverse()
             #f=numpy.array(f) 
         #else:
             #return 0,0
