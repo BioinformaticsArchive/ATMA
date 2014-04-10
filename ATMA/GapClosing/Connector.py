@@ -17,7 +17,7 @@ class GapFinder():
 
     costMatrix = None
     method = "dist"     # cost function method
-    solver = "hun"      # assignment solver method
+    solver = "ilp"      # assignment solver method
     maxDist = 50 # maximal allowed distance of endpoint partners for assignment problem
     minOrie = 0.75      # maximal orientation shift of endpoint partners
 
@@ -80,7 +80,10 @@ class GapFinder():
         self._calcCostMatrix()
 
         # solve assignment problem for cost matrix
-        binMatrix=AssignmentSolver.hun(self.costMatrix)
+        if self.solver=="ilp":
+            binMatrix=AssignmentSolver.ilp(self.costMatrix)
+        if self.solver=="hun":
+            binMatrix=AssignmentSolver.hun(self.costMatrix)
 
         # create new endpoints with matching partners
         for x,y in numpy.argwhere(binMatrix):

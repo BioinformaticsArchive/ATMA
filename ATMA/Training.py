@@ -111,12 +111,13 @@ class GapDetection():
             F.append(t1+t2)
             F.append(A)
             for i in numpy.arange(0.5,6,0.5):
-                #tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,0],i))
+                tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,0],i))
                 tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,1],i))
-                #tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,2],i))
+                tmp_Feature.append(vigra.gaussianSmoothing(tmp_volume_pre[:,:,:,2],i))
 
             
             for v in tmp_Feature:
+                #ToDo: change to interpolated line not just horizontal mean!!
                 s1, s2, s3 = v.shape
                 c = v[s1/2,s2/2,s3/2]
                 l = numpy.mean(v[s1/2,s2/2,:])
