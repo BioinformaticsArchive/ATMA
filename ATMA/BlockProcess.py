@@ -129,8 +129,6 @@ class BlockProcess():
             g[4]+=y0
             g[2]+=z0
             g[5]+=z0
-            print np.uint16(g)
-            print x0,y0,z0
            
         Attributes=np.array(GapList)
 

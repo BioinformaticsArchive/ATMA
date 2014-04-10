@@ -18,7 +18,7 @@ class GapFinder():
     costMatrix = None
     method = "dist"     # cost function method
     solver = "ilp"      # assignment solver method
-    maxDist = 50 # maximal allowed distance of endpoint partners for assignment problem
+    maxDist = 70 # maximal allowed distance of endpoint partners for assignment problem
     minOrie = 0.75      # maximal orientation shift of endpoint partners
 
     def __init__(self,EList):
@@ -59,7 +59,6 @@ class GapFinder():
         # Pair Features
         c = (x1+x2)/2                           # centre
         d = numpy.linalg.norm(x1-x2)            # distance
-        if numpy.all((x1-c)==0): print x1,x2,c,d
         k1= (x1-c) / numpy.linalg.norm(x1-c)    # vector pointing to center (1)
         k2= (x2-c) / numpy.linalg.norm(x2-c)    # vector pointing to center (2)
 

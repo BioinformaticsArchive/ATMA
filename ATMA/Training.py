@@ -49,7 +49,6 @@ class GapDetection():
             self.Labels.append(-1)
             self.SpecialFeatures.append(p)
 
-            print x,y,z
 
         self.Labels = numpy.array(self.Labels)
     
@@ -57,9 +56,6 @@ class GapDetection():
 
         #Features, Labels, Data
         O=[]
-        print len(self.gapL)
-        print len(self.Labels)
-        print len(self.SpecialFeatures)
         for i in range(len(self.gapL)):
             x,y,z=self.gapL[i]
             f=self.SpecialFeatures[i]
@@ -95,7 +91,6 @@ class GapDetection():
             # Pair Features
             c = (x1+x2)/2                           # centre
             d = numpy.linalg.norm(x1-x2)            # distance
-            if numpy.all((x1-c)==0): print x1,x2,c,d
             k1= (x1-c) / numpy.linalg.norm(x1-c)    # vector pointing to center (1)
             k2= (x2-c) / numpy.linalg.norm(x2-c)    # vector pointing to center (2)
 

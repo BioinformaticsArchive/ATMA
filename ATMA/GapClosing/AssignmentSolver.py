@@ -42,11 +42,10 @@ def ilp(costMatrix):
     if costMatrix.shape==(0,0):
         return []
 
-    tmpMatrix = numpy.copy(costMatrix)
-    binMatrix = numpy.zeros( tmpMatrix.shape,dtype=bool )
-
 
     dist_mat=numpy.copy(costMatrix)
+    dist_mat[costMatrix==-1]=10e10
+
     size_x   = dist_mat.shape[0]
     size_y   = dist_mat.shape[1]
     size_min = int(numpy.amin([size_x,size_y]))
@@ -92,6 +91,21 @@ def ilp(costMatrix):
         for j in range(size_y):
             res[i,j]=VAR[i,j].x
 
-    binMatrix[costMatrix==1]=0
+    binMatrix = numpy.zeros( costMatrix.shape,dtype=bool )
+    binMatrix[res==1]=1
+    binMatrix[costMatrix==-1]=0
     return binMatrix
 
+'''
+M=numpy.array([\
+        [1,6,2],\
+        [3,4,3],\
+        [2,6,-1],\
+        ])
+
+#print M
+print
+print M*hun(M)
+print
+print M*ilp(M)
+'''

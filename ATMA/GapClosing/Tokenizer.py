@@ -105,7 +105,6 @@ class Data2Token():
             o1=[]
             for k in range(len(s1)-1):
                 o=s1[k+1]-s1[k]
-                #print numpy.linalg.norm(o)
                 o/=numpy.linalg.norm(o)
                 o1.append(o)
             o1=numpy.mean(o1,axis=0)
