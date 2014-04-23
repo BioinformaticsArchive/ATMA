@@ -14,6 +14,7 @@ class ATMA_GUI(QtGui.QWidget):
 
     blockSize=[200,200,200]
     helo = 15
+    sizeF = [20,1000]
 
     def __init__(self):
         super(ATMA_GUI,self).__init__()
@@ -37,11 +38,11 @@ class ATMA_GUI(QtGui.QWidget):
         self._label(11, self._set_sigmaSmooth, "Smoothing" , "Sigma [float]")
         self._label(12, self._set_thresMembra, "Thresholding" , "Level [float]")
         self._label(13, self._none, "Closing" , "Pixel [integer]")
-        self._label(14, self._none, "Max. Distance" , "Pixel [integer]")
-        self._label(15, self._none, "Min. Distance" , "Pixel [integer]")
-        self._button2(16, self._runGapClosing, "Run Axon Classification",self._viewResults,"View Results")
-        
-        
+        self._label(14, self._setMinAxonSize, "Min. Axon Size" , "Pixel [integer]")
+        self._label(15, self._setMaxAxonSize, "Max. Axon Size" , "Pixel [integer]")
+        self._label(16, self._none, "Min. Distance" , "Pixel [integer]")
+        self._label(17, self._none, "Max. Distance" , "Pixel [integer]")
+        self._button2(18, self._runGapClosing, "Run Axon Classification",self._viewResults,"View Results")
         self._text(19, "Node of Ranvier Detection")
         self._button(20,self.runNodeDetection, "Train Classifier")
         self._button2(21, self._viewGaps, "View Gaps",self.zoom, "Zoom In/Out")
@@ -223,7 +224,7 @@ class ATMA_GUI(QtGui.QWidget):
         a.helo = self.helo
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
-        a.sizeFilter = [20,1000]
+        a.sizeFilter = self.sizeF
         a.verbose = 1
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
@@ -232,11 +233,11 @@ class ATMA_GUI(QtGui.QWidget):
         a=CLT()
         a.path_in= self.path_in
         a.path_out = self.path_out
-        a.blockSize = [200,200,200]
+        a.blockSize = [200,100,200]
         a.helo = 30
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
-        a.sizeFilter = [20,1000]
+        a.sizeFilter = self.sizeF
         a.verbose = 1
         a.run()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
@@ -346,6 +347,18 @@ class ATMA_GUI(QtGui.QWidget):
     def _set_thresMembra(self, text):
         try:
             self.thresMembra=float(text)
+        except ValueError:
+            pass
+    
+    def _setMinAxonSize(self, text):
+        try:
+            self.sizeF[0]=float(text)
+        except ValueError:
+            pass
+
+    def _setMaxAxonSize(self, text):
+        try:
+            self.sizeF[1]=float(text)
         except ValueError:
             pass
 
