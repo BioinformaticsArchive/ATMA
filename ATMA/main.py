@@ -233,13 +233,14 @@ class ATMA_GUI(QtGui.QWidget):
         a=CLT()
         a.path_in= self.path_in
         a.path_out = self.path_out
-        a.blockSize = [200,100,200]
+        a.blockSize = self.blockSize
         a.helo = 30
         a.sigmaSmooth = self.sigmaSmooth
         a.thresMembra = self.thresMembra
         a.sizeFilter = self.sizeF
         a.verbose = 1
         a.run()
+        print a.getScore()
         self.res=h5py.File(a.path_out[0])[a.path_out[1]+"/axons"][::]
 
 

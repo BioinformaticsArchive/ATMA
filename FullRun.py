@@ -1,9 +1,9 @@
 import ATMA.CLT
 a=ATMA.CLT()
 a.path_in = ["/Data/suralis/pre.h5","volume/data"]
-a.path_out = ["/tmp/res6.h5","data"]
+a.path_out = ["/tmp/res7.h5","data"]
 a.Sub_Volume = [[300,1200], [400,1100], [0,600]] #full dataset sub cube
-a.blockSize = [300,300,600]
+a.blockSize = [900,700,600]
 #a.blockSize = [900,700,600]
 #a.Sub_Volume = [[600,700], [600,700], [0,100]] #testset
 #a.blockSize = [75,75,75]

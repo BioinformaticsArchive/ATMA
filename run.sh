@@ -11,26 +11,34 @@ def main():
     ex = ATMA_GUI()
     app.exec_()
 
+
+
 def develop():
 
     app = PyQt4.QtGui.QApplication.instance()
     ex = ATMA_GUI()
     import h5py
-    ex.path_in = [home+'/data/vagus002PRE.h5','volume/data']
+
+    #small testset
+    #ex.path_in = [home+'/data/vagus002PRE.h5','volume/data']
+    #ex.path_raw = ['/Data/vagus002RAW.h5','volume/data']
+    #ex.Range = [0,200,0,200,0,120]
+
+    #full dataset
+    ex.path_in = ['/Data/vagus/data/pre.h5','volume/data']
+    ex.path_raw = ['/Data/vagus/data/raw.h5','volume/data']
+    ex.Range = [1500,1700,1500,1700,0,120]
+
     ex.PredData=h5py.File(ex.path_in[0])[ex.path_in[1]]
-    ex.path_raw = [home+'/data/vagus002RAW.h5','volume/data']
     ex.RawData=h5py.File(ex.path_raw[0])[ex.path_raw[1]]
     ex.path_out = ["/tmp/ttt.h5","data"]
-    #ex.Range = [100,200,100,200,60,120]
-    ex.Range = [0,200,0,200,0,120]
     ex.blockSize = [200,100,120]
-    #ex.blockSize = [250,250,250]
     ex.helo = 50
     ex.sigmaSmooth=0.7
     ex.thresMembra=0.7
-    #ex._runGapClosing()
+    ex._runGapClosing()
+    ex._viewResults()
     #ex.runNodeDetection()
-    #ex._viewResults()
     #ex.clickTRUE()
     #ex.clickFALSE()
     #ex.clickTRUE()
