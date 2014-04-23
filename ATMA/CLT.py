@@ -42,7 +42,7 @@ class CLT():
         EList = b.EList
         TList = b.TList
 
-        # metch endpoints and compute gaps
+        # match endpoints and compute gaps
         c=GapClosing.Connector.GapFinder(EList)
         c.run()
         GList = c.GList
