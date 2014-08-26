@@ -11,7 +11,7 @@ Install
 -------
 Check out the latest version with the command:
 ```bash
-    git clone git@github.com:RWalecki/ATMA.git
+git clone git@github.com:RWalecki/ATMA.git
 ```
 
 
@@ -20,8 +20,8 @@ Quick Start (GUI)
 -----------
 Run the ATMA GUI:
 ```bash
-"cd ATMA"
-"./run.sh"
+cd ATMA
+./run.sh
 ```
 
 1. Select Volume by clicking on 'Load Raw/Prediction Data'.
